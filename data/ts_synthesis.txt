@@ -1,0 +1,32 @@
+name Simple DTS
+init {'Base':1}
+;
+Base {'prop': set(), 'position': (0.5, 0.25)}
+A {'prop':{'A'}, 'position': (0, 1)}
+B {'prop':{'B'}, 'position': (0, 0)}
+C {'prop':{'C'}, 'position': (1, 0)}
+D {'prop':{'D'}, 'position': (1, 1)}
+;
+Base Base {'duration': 1}
+A A {'duration': 1}
+B B {'duration': 1}
+C C {'duration': 1}
+D D {'duration': 1}
+A B {'duration': 3}
+A C {'duration': 2}
+A D {'duration': 3}
+A Base {'duration': 2}
+B A {'duration': 3}
+B C {'duration': 3}
+B Base {'duration': 1}
+C A {'duration': 2}
+C B {'duration': 3}
+C D {'duration': 3}
+C Base {'duration': 1}
+D A {'duration': 3}
+D C {'duration': 3}
+D Base {'duration': 2}
+Base A {'duration': 2}
+Base B {'duration': 1}
+Base C {'duration': 1}
+Base D {'duration': 2}

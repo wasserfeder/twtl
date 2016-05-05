@@ -1,0 +1,2 @@
+The TWTL package, associated ANTLRv3 grammar files are covered by GNU GPL v3.0 license, see gpl.txt for more information.
+LOMAP is released under GNU GPL v2.0 license, see COPYING file within the LOMAP package for more information.

@@ -1,0 +1,81 @@
+<project name="Time Window Temporal Logic" default="twtl" basedir=".">
+<!--
+# Copyright (C) 2015-2016  Cristian Ioan Vasile <cvasile@bu.edu>
+# Hybrid and Networked Systems (HyNeSs) Group, BU Robotics Lab,
+# Boston University
+# See license.txt file for license information.
+
+SRC_PATH=src/
+BIN_PATH=bin/
+ANTLR_PATH=lib/
+ANTLR= antlr-3.1.3.jar
+ANTLR_GEN=org.antlr.Tool
+-->
+    <description>
+        This tools include a Time Window Temporal Logic (TWTL) parser and
+        a conversion program to a Deterministic Finite State Automata (DFA).
+        It can generate both exact and annotated DFAs.
+        It uses the ANTLR v3 framework.
+    </description>
+    <!-- set global properties for this build -->
+    <property name="src"   location="src" />
+    <property name="bin"   location="bin" />
+    <property name="lib"   location="lib" />
+    <property name="dist"  location="dist" />
+    <property name="antlr" location="${lib}/antlr-3.1.3.jar" />
+    <property name="main-program" value="twtl" />
+    
+    <target name="init">
+        <!-- Create the time stamp -->
+        <tstamp>
+            <format property="DSTAMP" pattern="yyyy-MM-dd-HH-mm" locale="en,US"/>
+        </tstamp>
+    </target>
+
+    <target name="twtl" depends="clean"
+        description="create TWTL lexer and parser" >
+        
+        <java classpath="${src}:${antlr}" classname="org.antlr.Tool">
+              <arg path="${src}/twtl.g" />
+        </java>
+        <java classpath="${src}:${antlr}" classname="org.antlr.Tool">
+              <arg path="${src}/bound.g" />
+        </java>
+    	<java classpath="${src}:${antlr}" classname="org.antlr.Tool">
+              <arg path="${src}/twtl2dfa.g" />
+        </java>
+        
+        <delete verbose="true">
+                 <fileset dir=".">
+                      <include name="*.tokens"/>
+                 </fileset>
+        </delete>
+    </target>
+
+    <target name="dist" depends="twtl,init" description="generate the distribution" >
+        <!-- Create the distribution directory -->
+        <mkdir dir="${dist}"/>
+
+        <!-- Put everything in twtl-${DSTAMP}.zip archive file -->
+        <zip destfile="${dist}/twtl-${DSTAMP}.zip"
+             basedir="."
+             excludes=".project, .pydevproject, dist/**, **/*.pyc, **/*.log"
+        />
+    </target>
+
+    <target name="clean" description="clean up" >
+        <delete verbose="true">
+            <fileset dir=".">
+                <include name="*.tokens"/>
+            </fileset>
+        </delete>
+        <delete verbose="true">
+            <fileset dir="${src}">
+                <include name="twtlLexer.py" />
+                <include name="twtlParser.py" />
+            	<include name="bound.py" />
+            	<include name="twtl2dfa.py" />
+            </fileset>
+        </delete>
+    </target>
+</project>
