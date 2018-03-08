@@ -19,7 +19,7 @@ The parsing of TWTL formulae is performed using ANTLRv3 framework. The package p
 <h3>Citation</h3>
 If you use TWTL or PyTWTL, then please consider citing the reference paper:
 
-Cristian Ioan Vasile, Derya Aksaray, and Calin Belta. <em>"Time Window Temporal Logic"<em>. Theoretical Computer Science, 691(Supplement C):27–54, August 2017. <a href="https://doi.org/10.1016/j.tcs.2017.07.012" target="_blank">doi:10.1016/j.tcs.2017.07.012</a>, 
+Cristian-Ioan Vasile, Derya Aksaray, and Calin Belta. <em>"Time Window Temporal Logic"</em>. Theoretical Computer Science, 691(Supplement C):27–54, August 2017. <a href="https://doi.org/10.1016/j.tcs.2017.07.012" target="_blank">doi:10.1016/j.tcs.2017.07.012</a>, 
 <a href="https://cristianvasile.com/sites/default/files/articole/TCS_2017.bib" target="_blank"><strong>[bib]</strong></a>
 
 <h3>Download</h3>
@@ -67,7 +67,7 @@ TWTL uses the ANTLR (version 3.1.3) third party Java library to generate the lex
 See the file names 'license.txt' for copyright notices and license information of packages used in PyTWTL.
 
 <h3>References</h3>
-<p id="1">[1] Cristian Ioan Vasile, Derya Aksaray, and Calin Belta. <em>"Time Window Temporal Logic"<em>. Theoretical Computer Science, 691(Supplement C):27–54, August 2017. <a href="https://doi.org/10.1016/j.tcs.2017.07.012" target="_blank">doi:10.1016/j.tcs.2017.07.012</a>.</p>
+<p id="1">[1] Cristian Ioan Vasile, Derya Aksaray, and Calin Belta. <em>"Time Window Temporal Logic"</em>. Theoretical Computer Science, 691(Supplement C):27–54, August 2017. <a href="https://doi.org/10.1016/j.tcs.2017.07.012" target="_blank">doi:10.1016/j.tcs.2017.07.012</a>.</p>
 <p id="2">[2] Alphan Ulusoy, Stephen L. Smith, Xu Chu Ding, Calin Belta, and Daniela Rus. <em>"Optimality and robustness in multi-robot path planning with temporal logic constraints."</em> The International Journal of Robotics Research 32, no. 8 (2013): 889-911.</p>
 <p id="3">[3] Terence Parr. <em>"The Definitive ANTLR Reference: Building Domain-Specific Languages."</em> Pragmatic Bookshelf, 2007. ISBN 978-0978739256.</p>
 <p id="4">[4] Aric A. Hagberg, Daniel A. Schult, and Pieter J. Swart. <em>"Exploring network structure, dynamics, and function using NetworkX."</em> 2008.</p>
