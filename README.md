@@ -4,7 +4,6 @@
 PyTWTL is a Python 2.7 implementation of the algorithms proposed in <a href="#1">[1]</a> based on LOMAP <a href="#2">[2]</a>, ANTLRv3 <a href="#3">[3]</a> and networkx <a href="#4">[4]</a> libraries. PyTWTL implementation is released under the GPLv3 license.
 The library can be used to:
 <ul type="square">
-<!-- li><code>todo</code> </li -->
     <li>construct DFAs and annotated DFAs from TWTL formulae;</li>
     <li>monitor the satisfaction of a TWTL formula;</li>
     <li>monitor the satisfaction of an arbitrary relaxation of a TWTL formula;</li>
@@ -20,11 +19,11 @@ The parsing of TWTL formulae is performed using ANTLRv3 framework. The package p
 <h3>Citation</h3>
 If you use TWTL or PyTWTL, then please consider citing the reference paper:
 
-Cristian-Ioan Vasile, Derya Aksaray, and Calin Belta. <em>"Time Window Temporal Logic"</em>, arXiv preprint, <a href="http://arxiv.org/abs/1602.04294" target="_blank">arXiv:1602.04294</a>, 2016.
-<a href="/hyness/files/2016/02/twtl.txt" target="_blank"><strong>[bib]</strong></a>
+Cristian Ioan Vasile, Derya Aksaray, and Calin Belta. <em>"Time Window Temporal Logic"<em>. Theoretical Computer Science, 691(Supplement C):27–54, August 2017. <a href="https://doi.org/10.1016/j.tcs.2017.07.012" target="_blank">doi:10.1016/j.tcs.2017.07.012</a>, 
+<a href="https://cristianvasile.com/sites/default/files/articole/TCS_2017.bib" target="_blank"><strong>[bib]</strong></a>
 
 <h3>Download</h3>
-<a href="/hyness/files/2016/02/pytwtl.zip">Download</a>
+<a href="https://github.com/wasserfeder/twtl.git" target="_blank">Download</a>
 
 <h3>Requirements</h3>
 The package is written for python 2.7. The following python packages are required:
@@ -40,11 +39,11 @@ You can install the packages using:
 <code>pip install networkx, numpy, matplotlib, pp, antlr-python-runtime, setuptools</code>
 
 <h3>How to Use</h3>
-See <code>examples_tcs.py</code> for examples of the algorithms and the PyTWTL API.
+See <code>examples_tcs.py</code> for examples of the algorithms and the PyTWTL API. 
 An ANT build file <code>build.xml</code> is provided to generate the lexer and parser from the ANTLR3 grammar files.
 
 <h3>License & Copying</h3>
-<pre>Copyright (C) 2015-2016  Cristian Ioan Vasile <cvasile@bu.edu>
+<pre>Copyright (C) 2015-2018  Cristian Ioan Vasile <cvasile@mit.edu>
 Hybrid and Networked Systems (HyNeSs) Group, BU Robotics Lab,
 Boston University
 
@@ -68,7 +67,7 @@ TWTL uses the ANTLR (version 3.1.3) third party Java library to generate the lex
 See the file names 'license.txt' for copyright notices and license information of packages used in PyTWTL.
 
 <h3>References</h3>
-<p id="1">[1] Cristian-Ioan Vasile, Derya Aksaray, and Calin Belta. <em>"Time Window Temporal Logic."</em> arXiv preprint, <a href="http://arxiv.org/abs/1602.04294" target="_blank">arXiv:1602.04294</a>, 2016.</p>
+<p id="1">[1] Cristian Ioan Vasile, Derya Aksaray, and Calin Belta. <em>"Time Window Temporal Logic"<em>. Theoretical Computer Science, 691(Supplement C):27–54, August 2017. <a href="https://doi.org/10.1016/j.tcs.2017.07.012" target="_blank">doi:10.1016/j.tcs.2017.07.012</a>.</p>
 <p id="2">[2] Alphan Ulusoy, Stephen L. Smith, Xu Chu Ding, Calin Belta, and Daniela Rus. <em>"Optimality and robustness in multi-robot path planning with temporal logic constraints."</em> The International Journal of Robotics Research 32, no. 8 (2013): 889-911.</p>
 <p id="3">[3] Terence Parr. <em>"The Definitive ANTLR Reference: Building Domain-Specific Languages."</em> Pragmatic Bookshelf, 2007. ISBN 978-0978739256.</p>
 <p id="4">[4] Aric A. Hagberg, Daniel A. Schult, and Pieter J. Swart. <em>"Exploring network structure, dynamics, and function using NetworkX."</em> 2008.</p>
