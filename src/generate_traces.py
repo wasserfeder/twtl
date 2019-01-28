@@ -33,19 +33,19 @@ from twtl import translate, DFAType
 
 def generate(formula, traces_file, no_traces=100):
     np.random.seed(1001)
-    
+
     alphabet, dfa = translate(formula, kind=DFAType.Infinity, optimize=True)
     alphabet = [set([s]) for s in alphabet] + [set()]
-    
-    print 'alphabet:', alphabet 
-    
+
+    print 'alphabet:', alphabet
+
     data = {'positive': [], 'negative': []}
-    
+
     both = 0
-    
+
     for k in range(no_traces):
         print 'k:', k
-        
+
         state = iter(dfa.init).next()
         w = []
         while True:
@@ -73,15 +73,15 @@ def generate(formula, traces_file, no_traces=100):
                     both += 1
                     data['negative'].append(w)
                 break
-    
+
     print 'done', len(data['positive']), len(data['negative']), both
-    
+
 #     for w in data['positive']:
 #         print 'length:', len(w)
 #     print
 #     for w in data['negative']:
 #         print 'length:', len(w)
-    
+
     with open(traces_file, 'w') as fout:
         pprint(data, fout, width=5000)
 

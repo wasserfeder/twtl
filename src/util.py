@@ -1,5 +1,5 @@
 license_text='''
-    Module implements utility functions used throughout the code. 
+    Module implements utility functions used throughout the code.
     Copyright (C) 2015-2016  Cristian Ioan Vasile <cvasile@bu.edu>
     Hybrid and Networked Systems (HyNeSs) Group, BU Robotics Lab,
     Boston University
@@ -93,7 +93,7 @@ def _debug_print_disj_choices(tree, constraint, c_left=None, c_right=None):
             logging.debug('constraint: %s -> %s', k, v)
     for k, v in tree.choices.iteritems():
         logging.debug('tree.choices: %s -> %s', k, v)
-        
+
     if c_left is not None:
         for k, v in c_left.iteritems():
             logging.debug('c_left: %s -> %s', k, v)
@@ -102,7 +102,7 @@ def _debug_print_disj_choices(tree, constraint, c_left=None, c_right=None):
             logging.debug('c_right: %s -> %s', k, v)
 
 def _debug_no_repeated_finals_check(pa, tree, M):
-    '''Tests whether all paths in M intersect the set of finals states of pa 
+    '''Tests whether all paths in M intersect the set of finals states of pa
     exactly once.
     '''
     if logging.getLogger().isEnabledFor(logging.DEBUG):

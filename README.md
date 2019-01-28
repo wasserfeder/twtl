@@ -1,5 +1,5 @@
 <h3>Overview</h3>
-<strong>T</strong>ime <strong>W</strong>indow <strong>T</strong>emporal <strong>L</strong>ogic (TWTL) is a bounded temporal logic used to specify rich properties<a href="#1">[1]</a>. Relaxed versions of TWTL formulae are also considered in the sense of extending the deadlines of time windows. An automata based approach is proposed to solve synthesis, verification and learning problems. The key ingredient is a construction algorithm of annotated Deterministic Finite State Automata (DFA) from TWTL properties. See <a href="#1">[1]</a> for more details. 
+<strong>T</strong>ime <strong>W</strong>indow <strong>T</strong>emporal <strong>L</strong>ogic (TWTL) is a bounded temporal logic used to specify rich properties<a href="#1">[1]</a>. Relaxed versions of TWTL formulae are also considered in the sense of extending the deadlines of time windows. An automata based approach is proposed to solve synthesis, verification and learning problems. The key ingredient is a construction algorithm of annotated Deterministic Finite State Automata (DFA) from TWTL properties. See <a href="#1">[1]</a> for more details.
 
 PyTWTL is a Python 2.7 implementation of the algorithms proposed in <a href="#1">[1]</a> based on LOMAP <a href="#2">[2]</a>, ANTLRv3 <a href="#3">[3]</a> and networkx <a href="#4">[4]</a> libraries. PyTWTL implementation is released under the GPLv3 license.
 The library can be used to:
@@ -19,7 +19,7 @@ The parsing of TWTL formulae is performed using ANTLRv3 framework. The package p
 <h3>Citation</h3>
 If you use TWTL or PyTWTL, then please consider citing the reference paper:
 
-Cristian-Ioan Vasile, Derya Aksaray, and Calin Belta. <em>"Time Window Temporal Logic"</em>. Theoretical Computer Science, 691(Supplement C):27–54, August 2017. <a href="https://doi.org/10.1016/j.tcs.2017.07.012" target="_blank">doi:10.1016/j.tcs.2017.07.012</a>, 
+Cristian-Ioan Vasile, Derya Aksaray, and Calin Belta. <em>"Time Window Temporal Logic"</em>. Theoretical Computer Science, 691(Supplement C):27–54, August 2017. <a href="https://doi.org/10.1016/j.tcs.2017.07.012" target="_blank">doi:10.1016/j.tcs.2017.07.012</a>,
 <a href="https://cristianvasile.com/sites/default/files/articole/TCS_2017.bib" target="_blank"><strong>[bib]</strong></a>
 
 <h3>Download</h3>
@@ -39,7 +39,7 @@ You can install the packages using:
 <code>pip install networkx, numpy, matplotlib, pp, antlr-python-runtime, setuptools</code>
 
 <h3>How to Use</h3>
-See <code>examples_tcs.py</code> for examples of the algorithms and the PyTWTL API. 
+See <code>examples_tcs.py</code> for examples of the algorithms and the PyTWTL API.
 An ANT build file <code>build.xml</code> is provided to generate the lexer and parser from the ANTLR3 grammar files.
 
 <h3>License & Copying</h3>

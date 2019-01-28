@@ -62,23 +62,23 @@ class ControlPath(object):
     '''Class defining a (partial) control policy as a path in a product
     automaton with its associated optimal temporal relaxation value `tau`.
     '''
-    
+
     __slots__ = ['path', 'tau', '_hash']
-    
+
     def __init__(self, path=None, tau=ninf):
         self.path = tuple(path)
         self.tau = tau
         self._hash = hash(self.path)
-    
+
     def update_hash(self):
         self._hash = hash(self.path)
-    
+
     def __eq__(self, cpath):
         # using the stored hash value first saves some time when comparing paths
         if self._hash != cpath._hash:
             return False
         return self.path == cpath.path
-    
+
     def __str__(self):
         return '|| {} >> : {}'.format(self.tau, self.path)
     __repr__ = __str__
@@ -88,7 +88,7 @@ class ControlPathsSet(object):
     support three basic operations: union, intersection and concatenation which
     also update the temporal relaxation values of the control paths.
     '''
-    
+
     def __init__(self, paths=None, copy=False):
         '''Construct a new set of control paths from the given list of paths.
         If `copy` is true, then a (shallow) copy of the list is made, otherwise
@@ -101,7 +101,7 @@ class ControlPathsSet(object):
             self.paths = list(paths)
         else:
             self.paths = paths
-    
+
     def union(self, other):
         '''Implements the union of two sets of control paths. If a path is in
         both sets, then it is added once and its `tau` value is set as the
@@ -117,7 +117,7 @@ class ControlPathsSet(object):
             else:
                 M.paths.append(pr)
         return M
-    
+
     def intersection(self, other):
         '''Implements the intersection of two sets of control paths. The `tau`
         value of a path in the intersection is set as the maximum between the
@@ -132,7 +132,7 @@ class ControlPathsSet(object):
                     pl.tau = max(pl.tau, pr.tau)
                     break
         return M
-    
+
     def concatenate(self, other):
         '''Implements the pairwise concatenation of paths from the current set
         with compatible paths from the `other` set. An ordered pair of path is
@@ -153,11 +153,11 @@ class ControlPathsSet(object):
                     M.paths.append(ControlPath(pl.path[:-1] + pr.path,
                                                tau=max(pl.tau, pr.tau-1)))
         return M
-    
+
     __or__ = union
     __and__ = intersection
     __add__ = concatenate
-    
+
     def __iter__(self):
         return iter(self.paths)
 
@@ -165,26 +165,26 @@ class ControlPathsSet(object):
 def ts_times_fsa(ts, fsa): #FIXME: product automaton convention
     # Create the product_model
     product_model = Model(directed=True, multi=False)
-    
+
     init_state = (ts.init.keys()[0], fsa.init.keys()[0])
     product_model.init[init_state] = 1
     product_model.g.add_node(init_state)
     if init_state[1] in fsa.final:
         product_model.final.add(init_state)
-    
+
     stack = [init_state]
     # Consume the stack
     while(stack):
         cur_state = stack.pop()
         ts_state, fsa_state = cur_state
-        
+
         for ts_next in ts.next_states_of_wts(ts_state, traveling_states = False):
             ts_next_state = ts_next[0]
             ts_prop = ts.g.node[ts_next_state].get('prop',set())
-            
+
             for fsa_next_state in fsa.next_states_of_fsa(fsa_state, ts_prop):
                 next_state = (ts_next_state, fsa_next_state)
-                
+
                 if(next_state not in product_model.g):
                     # Add the new state
                     product_model.g.add_node(next_state)
@@ -195,7 +195,7 @@ def ts_times_fsa(ts, fsa): #FIXME: product automaton convention
                         product_model.final.add(next_state)
                     # Continue search from next state
                     stack.append(next_state)
-                    
+
                 elif(next_state not in product_model.g[cur_state]):
                     product_model.g.add_edge(cur_state, next_state)
     return product_model
@@ -206,14 +206,14 @@ def expand_duration_ts(ts):
     '''
     assert not ts.multi
     ets = Ts(directed=ts.directed, multi=False)
-    
+
     # copy attributes
     ets.name = ts.name
     ets.init = ts.init
-    
+
     # copy nodes with data
     ets.g.add_nodes_from(ts.g.nodes_iter(data=True))
-    
+
     # expand edges
     ets.state_map = dict() # reverse lookup dictionary for intermediate nodes
     ng = it.count()
@@ -232,7 +232,7 @@ def expand_duration_ts(ts):
         # update reverse lookup map
         for state in aux_nodes[1:-1]:
             ets.state_map[state] = (u, v)
-    
+
     if logging.getLogger().isEnabledFor(logging.DEBUG):
         logging.debug('[extend_ts] TS: ({}, {}) ETS:({}, {})'.format(
                         nx.number_of_nodes(ts.g), nx.number_of_edges(ts.g),
@@ -244,13 +244,13 @@ def one_loop_reach_graph(pa, states=None):
     if not states:
         states = set([x for x, _ in pa.final])
     s_init = pa.init.keys()[0][1]
-    
+
     g = nx.DiGraph(name='One loop reachability graph')
     for x in states:
         paths = nx.shortest_path_length(pa.g, source=(x, s_init))
         edges = [(x, p[0], d) for p, d in paths.iteritems() if p in pa.final]
         g.add_weighted_edges_from(edges)
-    
+
     return g
 
 def policy_output_word(path_ts, ap):
@@ -309,14 +309,14 @@ def partial_control_policies(pa, dfa, init, finish, constraint=None):
                 # the edge activates properly
                 dfa.g[path[-2][1]][p[1]]['input'] <= constraint[path[-2][1]]])
     assert len(sat_paths) == len(set(map(tuple, sat_paths)))
-    
+
     # prune paths which intersect the set of final states more than once
     sat_paths_aux = []
     for path in sat_paths:
         if not [p for p in path[:-1] if p[1] in finish]:
             sat_paths_aux.append(path)
     sat_paths = sat_paths_aux
-    
+
     return sat_paths
 
 def partial_control_policies2(pa, dfa, init, finish, constraint=None):
@@ -329,7 +329,7 @@ def partial_control_policies2(pa, dfa, init, finish, constraint=None):
                   init, finish, constraint)
     if constraint is not None:
         C = constraint.viewkeys()
-    
+
     sat_paths = []
     for source in (p for p in pa.g.nodes_iter() if p[1] in init):
         level=1                  # the current level
@@ -356,7 +356,7 @@ def partial_control_policies2(pa, dfa, init, finish, constraint=None):
                   path[-2][1] in C and # is in restriction
                   # the edge activates properly
                   dfa.g[path[-2][1]][p[1]]['input'] <= constraint[path[-2][1]]])
-        
+
     return sat_paths
 
 def relaxed_control_policy(tree, dfa, pa, constraint=None):
@@ -364,23 +364,23 @@ def relaxed_control_policy(tree, dfa, pa, constraint=None):
     also returns the value of the optimal relaxation.
     '''
     assert tree.wdf
-    
+
     if tree.unr: # primitive/unrelaxable formula
         paths = partial_control_policies(pa, dfa, tree.init, tree.final, constraint)
         return ControlPathsSet([ControlPath(p) for p in paths])
-    
+
     if tree.wwf and tree.operation == Op.event: # leaf within operator
         paths = partial_control_policies(pa, dfa, tree.init, tree.final, constraint)
         return ControlPathsSet([ControlPath(path, len(path) - tree.high - 1)
                                     for path in paths])
-    
+
     if not tree.wwf and tree.operation == Op.event:
         M_ch = relaxed_control_policy(tree.left, dfa, pa, constraint)
         if tree.low == 0:
             for cpath in M_ch:
                 cpath.tau = max(len(cpath.path) - tree.high - 1, path.tau)
             return M_ch
-        
+
         M = ControlPathsSet()
         for cp in M_ch:
             paths = nx.shortest_path(pa.g, target=cp.path[0])
@@ -389,21 +389,21 @@ def relaxed_control_policy(tree, dfa, pa, constraint=None):
             tau = max(len(cp.path)+tree.low-tree.high, cp.tau) #TODO: should I subtract -1?
             M.paths.extend([ControlPath(p, tau) for p in sat_paths])
         return M
-    
+
     if tree.operation == Op.cat:
         M_left = relaxed_control_policy(tree.left, dfa, pa)
         M_right = relaxed_control_policy(tree.right, dfa, pa, constraint)
         # concatenate paths from M_left with paths from M_rigth
         M = M_left + M_right
         return M
-    
+
     if tree.operation == Op.intersection:
         M_left = relaxed_control_policy(tree.left, dfa, pa, constraint)
         M_right = relaxed_control_policy(tree.right, dfa, pa, constraint)
         # intersection of M_left and M_rigth
         M = M_left & M_right
         return M
-    
+
     if tree.operation == Op.union:
         if constraint is None:
             c_left = {s: ch.both | ch.left for s, ch in tree.choices.iteritems()}
@@ -414,13 +414,13 @@ def relaxed_control_policy(tree, dfa, pa, constraint=None):
             for s in tree.choices.viewkeys() & constraint.viewkeys():
                 c_left[s] = constraint[s] & (tree.choices[s].both | tree.choices[s].left)
                 c_right[s] = constraint[s] & (tree.choices[s].both | tree.choices[s].right)
-        
+
         M_left = relaxed_control_policy(tree.left, dfa, pa, c_left)
         M_right = relaxed_control_policy(tree.right, dfa, pa, c_right)
         # union of M_left and M_rigth
         M = M_left | M_right
         return M
-    
+
     raise ValueError('Unknown operation: {}!'.format(tree.operation))
 
 def compute_control_policy(pa, dfa, kind):
@@ -459,15 +459,15 @@ def verify(ts, dfa):
     holds.
     '''
     assert dfa.kind == DFAType.Infinity
-    
+
     dfa_complete = dfa.clone()
     dfa_complete.add_trap_state()
     dfa_complete.g.remove_edge(iter(dfa_complete.final).next(), 'trap')
-    
+
     logging.info('Constructing product automaton with infinity DFA!')
     pa = ts_times_fsa(ts, dfa_complete)
     logging.info('Product automaton size is: (%d, %d)', *pa.size())
-    
+
     return nx.is_directed_acyclic_graph(pa.g) and pa.final and \
             all([pa.g.out_degree(u) > 0 for u in pa.g.nodes_iter()
                                             if u not in pa.final])

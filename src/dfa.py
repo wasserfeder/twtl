@@ -1,5 +1,5 @@
 license_text='''
-    Module implements Time-Window Temporal Logic operations. 
+    Module implements Time-Window Temporal Logic operations.
     Copyright (C) 2015-2016  Cristian Ioan Vasile <cvasile@bu.edu>
     Hybrid and Networked Systems (HyNeSs) Group, BU Robotics Lab,
     Boston University
@@ -93,12 +93,12 @@ class Op(object):
 class Choice(object):
     '''Class defining the choices for disjunction operators.'''
     __slots__ = ['both', 'left', 'right']
-    
+
     def __init__(self, both=None, left=None, right=None):
         self.both = set(both) if both is not None else set()
         self.left = set(left) if left is not None else set()
         self.right = set(right) if right is not None else set()
-    
+
     def __repr__(self): return self.__str__()
     def __str__(self):
         return 'both={} left={} right={}'.format(self.both, self.left, self.right)
@@ -106,7 +106,7 @@ class Choice(object):
 
 class DFATreeNode(object):
     '''Class defining a tree node to store information about TWTL operators
-    used to compute relaxed control policies with respect to deadlines. 
+    used to compute relaxed control policies with respect to deadlines.
     Each node stores the associated operation, the initial and final states of
     the automaton corresponding to the formula associated with the tree, the
     left and right subtrees, some flags used for sanity checks and additional
@@ -125,13 +125,13 @@ class DFATreeNode(object):
         self.ndj = ndj + (self.operation == Op.union)
         self.init = set(init)
         self.final = set(final)
-        
+
         if self.operation == Op.event:
             self.low = kwargs.get('low', 0)
             self.high = kwargs.get('high', 0)
         elif self.operation == Op.union:
             self.choices = kwargs.get('choices', None)
-    
+
     def relabel(self, mapping, expand=False):
         '''Relabels the data about the DFA states which are stored within the
         nodes of the tree. The map `mapping` is used to translate the states'
@@ -162,7 +162,7 @@ class DFATreeNode(object):
                 stack.append(tree.right)
             if tree.left is not None:
                 stack.append(tree.left)
-    
+
     def normalize(self, init, final):
         '''Resets the initial and final sets of states in the tree such that it
         eliminates unreachable start or end configurations, i.e. (1) a
@@ -171,7 +171,7 @@ class DFATreeNode(object):
         eventually operators; and (2) in case of concatenation, the left
         sub-formula must start at the same states as the larger formula, while
         the right sub-formula must end at same final states as the larger
-        formula. 
+        formula.
         '''
 #         return
         if self.operation == Op.cat:
@@ -191,7 +191,7 @@ class DFATreeNode(object):
                     self.left.normalize(init, final)
                 if self.right is not None:
                     self.right.normalize(init, final)
-    
+
     def pprint(self, level=0, indent=2):
         '''Returns a multi-line string representation of the whole tree.'''
         ret = StringIO()
@@ -211,7 +211,7 @@ class DFATreeNode(object):
         ret_str = str(ret.getvalue())
         ret.close()
         return ret_str
-    
+
     def __str__(self):
         return 'Op: {} Flags[WDF, WWF, UNR]: {} {} {}'.\
                 format(Op.str(self.operation), self.wdf, self.wwf, self.unr)
@@ -227,7 +227,7 @@ def copy_tree(dfa_src, dfa_dest, mapping=None):
             dfa_dest.tree.relabel(mapping)
 
 def init_tree(dfa, operation=Op.nop):
-    '''Creates a new AST tree node and adds it to the automaton `dfa`. The 
+    '''Creates a new AST tree node and adds it to the automaton `dfa`. The
     operation corresponding to the tree node is given by the `operation`
     parameter (default=`Op.nop`).
     '''
@@ -314,7 +314,7 @@ def relabel_dfa(dfa, mapping='default', start=0, copy=False):
     keys = mapping.keys()
     nodes = [u for u in dfa.g.nodes_iter() if u not in keys]
     mapping.update(dict(zip(nodes, it.count(start))))
-    
+
     if copy: # create new dfa
         ret = Fsa(dfa.props, dfa.directed, dfa.multi)
         ret.name = str(dfa.name)
@@ -358,7 +358,7 @@ def accept_prop(props, prop=None, boolean=None):
         logger.debug('[accent_prop] Boolean: {} Props: {}'.format(boolean, props))
     else:
         raise AssertionError('Either prop or boolean must be given!')
-    
+
     dfa = Fsa(props, directed=True, multi=False)
     dfa.name = name
     bitmaps = dfa.get_guard_bitmap(guard)
@@ -367,7 +367,7 @@ def accept_prop(props, prop=None, boolean=None):
     dfa.g.add_edge(u, v, attr_dict={'weight': 0, 'input': bitmaps, 'guard' : guard, 'label': guard})
     dfa.init[u] = 1
     dfa.final.add(v)
-    
+
     init_tree(dfa, operation=Op.accept)
     return dfa
 
@@ -378,21 +378,21 @@ def hold(props, prop, duration, negation=False):
     contain prop instead.
     '''
     assert prop in props
-    
+
     guard = prop if not negation else '!' + prop
     dfa = Fsa(props, directed=True, multi=False)
     dfa.name = '(Hold {} {}{} )'.format(duration, 'not ' if negation else '', prop)
     bitmaps = dfa.get_guard_bitmap(guard)
-    
+
     ngen = it.count()
     nodes = [ngen.next() for _ in range(duration+2)]
     attr_dict={'weight': 0, 'input': bitmaps, 'guard' : guard, 'label': guard}
     dfa.g.add_path(nodes, **attr_dict)
-    
+
     u, v = nodes[0], nodes[-1]
     dfa.init[u] = 1
     dfa.final.add(v)
-    
+
     init_tree(dfa, operation=Op.hold)
     logger.debug('[hold] Prop: {} Duration: {} Negation: {} Props: {}'.format(prop, duration, negation, props))
     return dfa
@@ -421,10 +421,10 @@ def concatenation(dfa1, dfa2):
     assert dfa1.alphabet == dfa2.alphabet
     assert len(dfa1.init) == 1 and len(dfa2.init) == 1
     assert len(dfa1.final) == 1 and len(dfa2.final) == 1
-    
+
     dfa = Fsa(dfa1.props, dfa1.directed, dfa1.multi)
     dfa.name = '(Concat {} {} )'.format(dfa1.name, dfa2.name)
-    
+
     # relabel the two DFAs to avoid state name collisions and merge the final
     # state of dfa1 with the initial state of dfa2
     relabel_dfa(dfa1, start=0)
@@ -434,11 +434,11 @@ def concatenation(dfa1, dfa2):
     assert len(set(dfa1.g.nodes()) & set(dfa2.g.nodes())) == 1
     dfa.g.add_edges_from(dfa1.g.edges_iter(data=True))
     dfa.g.add_edges_from(dfa2.g.edges_iter(data=True))
-    
+
     # define initial state and final state
     dfa.init = dict(dfa1.init)
     dfa.final = set(dfa2.final)
-    
+
     if getDFAType() == DFAType.Infinity:
         mark_concatenation(dfa1, dfa2, dfa)
     elif getDFAType() == DFAType.Normal:
@@ -447,7 +447,7 @@ def concatenation(dfa1, dfa2):
     else:
         raise ValueError('DFA type must be either DFAType.Normal or ' +
                          'DFAType.Infinity! {} was given!'.format(getDFAType()))
-    
+
     logger.debug('[concatenation] DFA1: {} DFA2: {}'.format(dfa1.name, dfa2.name))
     return dfa
 
@@ -463,14 +463,14 @@ def intersection(dfa1, dfa2):
     assert dfa1.alphabet == dfa2.alphabet
     assert len(dfa1.init) == 1 and len(dfa2.init) == 1
     assert len(dfa1.final) == 1 and len(dfa2.final) == 1
-    
+
     dfa = Fsa(dfa1.props, dfa1.directed, dfa1.multi)
     dfa.name = '(Intersection {} {} )'.format(dfa1.name, dfa2.name)
-    
+
     init = list(it.product(dfa1.init.keys(), dfa2.init.keys()))
     dfa.init = dict(zip(init, (1,)*len(init)))
     assert len(dfa.init) == 1
-    
+
     stack = list(init)
     while stack:
         u1, u2 = stack.pop()
@@ -496,11 +496,11 @@ def intersection(dfa1, dfa2):
                 bitmaps = set(d1['input'])
                 guard = d1['guard']
                 dfa.g.add_edge((u1, u2), (v1, u2), attr_dict={'weight': 0, 'input': bitmaps, 'guard' : guard, 'label': guard})
-    
+
     # the set of final states is the product of final sets of dfa1 and dfa2
     dfa.final = set(it.product(dfa1.final, dfa2.final))
     assert len(dfa.final) == 1
-    
+
     if getDFAType() == DFAType.Infinity:
         mark_product(dfa1, dfa2, dfa, Op.intersection)
     elif getDFAType() == DFAType.Normal:
@@ -509,10 +509,10 @@ def intersection(dfa1, dfa2):
     else:
         raise ValueError('DFA type must be either DFAType.Normal or ' +
                          'DFAType.Infinity! {} was given!'.format(getDFAType()))
-    
+
     # relabel states
     relabel_dfa(dfa)
-    
+
     logger.debug('[intersection] DFA1: {} DFA2: {}'.format(dfa1.name, dfa2.name))
     return dfa
 
@@ -527,10 +527,10 @@ def union(dfa1, dfa2):
     assert dfa1.alphabet == dfa2.alphabet
     assert len(dfa1.init) == 1 and len(dfa2.init) == 1
     assert len(dfa1.final) == 1 and len(dfa2.final) == 1
-    
+
     dfa = Fsa(dfa1.props, dfa1.directed, dfa1.multi)
     dfa.name = '(Union {} {} )'.format(dfa1.name, dfa2.name)
-    
+
     # add self-loops on final states and trap states
     attr_dict={'weight': 0, 'input': dfa.alphabet, 'guard' : '(1)', 'label': '(1)'}
     dfa1.g.add_edges_from([(s, s, attr_dict) for s in dfa1.final])
@@ -539,11 +539,11 @@ def union(dfa1, dfa2):
     dfa2.add_trap_state()
     dfa1.g.remove_edges_from([(s, s) for s in dfa1.final])
     dfa2.g.remove_edges_from([(s, s) for s in dfa2.final])
-    
+
     init = list(it.product(dfa1.init.keys(), dfa2.init.keys()))
     dfa.init = dict(zip(init, (1,)*len(init)))
-    assert len(dfa.init) == 1 # dfa1 and dfa2 are deterministic 
-    
+    assert len(dfa.init) == 1 # dfa1 and dfa2 are deterministic
+
     stack = list(init)
     while stack:
         u1, u2 = stack.pop()
@@ -555,16 +555,16 @@ def union(dfa1, dfa2):
                         stack.append((v1, v2))
                     guard = '({}) & ({})'.format(d1['guard'], d2['guard'])
                     dfa.g.add_edge((u1, u2), (v1, v2), attr_dict={'weight': 0, 'input': bitmaps, 'guard' : guard, 'label': guard})
-    
+
     # compute set of final states
     dfa.final = set([(u, v) for u, v in dfa.g.nodes_iter()
                                          if u in dfa1.final or v in dfa2.final])
-    
+
     # remove trap states
     dfa1.g.remove_nodes_from(['trap'])
     dfa2.g.remove_nodes_from(['trap'])
     dfa.g.remove_nodes_from([('trap', 'trap')])
-    
+
     # merge finals
     if len(dfa.final) > 1:
         final = (iter(dfa1.final).next(), iter(dfa2.final).next())
@@ -587,7 +587,7 @@ def union(dfa1, dfa2):
         # remove all other final states
         dfa.g.remove_nodes_from(dfa.final - set([final]))
         dfa.final = set([final])
-    
+
     if getDFAType() == DFAType.Infinity:
         mark_product(dfa1, dfa2, dfa, Op.union, choices)
     elif getDFAType() == DFAType.Normal:
@@ -596,10 +596,10 @@ def union(dfa1, dfa2):
     else:
         raise ValueError('DFA type must be either DFAType.Normal or ' +
                          'DFAType.Infinity! {} was given!'.format(getDFAType()))
-    
+
     # relabel states
     relabel_dfa(dfa)
-    
+
     logger.debug('[union] DFA1: {} DFA2: {}'.format(dfa1.name, dfa2.name))
     return dfa
 
@@ -608,7 +608,7 @@ def within(phi, low, high):
     operator which encloses the formula corresponding to dfa.
     '''
     assert len(phi.init) == 1 and len(phi.final) == 1
-    
+
     if getDFAType() == DFAType.Normal:
         return repeat(phi, low, high)
     elif getDFAType() == DFAType.Infinity:
@@ -620,11 +620,11 @@ def eventually(phi_dfa, low, high):
     '''Creates a DFA which accepts the infinity version of a within operator
     which encloses the formula corresponding to phi_dfa.
     NOTE: Assumes that phi_dfa contains no ``trap'' states, i.e. states which do
-    not reach a final state. 
+    not reach a final state.
     '''
     dfa = phi_dfa.clone()
     dfa.name = '(Eventually {} {} {} )'.format(phi_dfa.name, low, high)
-    
+
     init = dfa.init.keys()[0]
     for state in dfa.g.nodes():
         bitmaps = set()
@@ -632,10 +632,10 @@ def eventually(phi_dfa, low, high):
         for _, _, d in dfa.g.out_edges_iter(state, data=True):
             bitmaps |= d['input']
         bitmaps = dfa.alphabet - bitmaps
-        
+
         if state not in dfa.final and bitmaps:
             dfa.g.add_edge(state, init, attr_dict={'weight': 0, 'input': bitmaps, 'guard' : guard, 'label': guard})
-    
+
     # add states to accept a prefix word of any symbol of length low
     if low > 0:
         guard = '(1)'
@@ -646,7 +646,7 @@ def eventually(phi_dfa, low, high):
         dfa.g.add_path(nodes, **attr_dict)
         dfa.g.add_edge(nodes[-1], init, attr_dict)
         dfa.init = {nodes[0] : 1}
-    
+
     # add counter annotation
     mark_eventually(phi_dfa, dfa, low, high)
     logger.debug('[eventually] Low: {} High: {} DFA: {}'.format(low, high, phi_dfa.name))
@@ -658,10 +658,10 @@ def repeat(phi_dfa, low, high):
     '''
     assert len(phi_dfa.init) == 1
     assert len(phi_dfa.final) == 1
-    
+
     init_state = phi_dfa.init.keys()[0]
     final_state = set(phi_dfa.final).pop()
-    
+
     # remove trap states if there are any
     phi_dfa.remove_trap_states()
     # initialize the resulting dfa
@@ -700,12 +700,12 @@ def repeat(phi_dfa, low, high):
                 bitmaps |= d['input']
                 next_states.add(next_state)
             bitmaps = dfa.alphabet - bitmaps
-            
+
             if state not in dfa.final and bitmaps:
                 dfa.g.add_edge(state, rstate, attr_dict={'weight': 0, 'input': bitmaps, 'guard' : guard, 'label': guard})
         # update current states
         current_states = next_states | set([rstate])
-    
+
     # relabel states
     relabel_dfa(dfa)
     # add states to accept a prefix word of any symbol of length low
@@ -718,7 +718,7 @@ def repeat(phi_dfa, low, high):
         dfa.g.add_path(nodes, **attr_dict)
         dfa.g.add_edge(nodes[-1], dfa.init.keys()[0], attr_dict)
         dfa.init = {nodes[0] : 1}
-    
+
     logger.debug('[within] Low: {} High: {} DFA: {}'.format(low, high, phi_dfa.name))
     return dfa
 
@@ -726,13 +726,13 @@ def truncate_dfa(dfa, cutoff):
     '''Returns a dfa which accepts only the words of length at most cutoff from
     the language associated with the given dfa.
     Note: It assumes that the given dfa has a finite language, i.e. it is a DAG.
-    
+
     Adapted from networkx.algorithms.shortest_paths.unweighted.single_source_shortest_path_length
     NetworkX is available at http://networkx.github.io.
     '''
     assert len(dfa.init) == 1 # deterministic model
     source = dfa.init.keys()[0]
-    
+
     # compute transitions which form path of length at most cutoff in the dfa
     visited = set([source])
     edges = []
@@ -746,10 +746,10 @@ def truncate_dfa(dfa, cutoff):
                 if child not in visited:
                     visited.add(child)
                     nextlevel.append((child, iter(dfa.g[child])))
-    
+
     # remove transitions which are not part of paths of length at most cutoff
     dfa.g.remove_edges_from([e for e in dfa.g.edges_iter() if e not in edges])
     # remove all states which do not reach the final states
     dfa.remove_trap_states()
-    
+
     return dfa

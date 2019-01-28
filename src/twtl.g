@@ -30,7 +30,7 @@ tokens {
     AND = '&';
     OR  = '|';
     NOT = '!';
-    
+
     // Temporal operators
     HOLD   = 'H';
     WITHIN = 'W';
@@ -39,7 +39,7 @@ tokens {
 
 @header {
 license_text='''
-    Parser for TWTL formulae. 
+    Parser for TWTL formulae.
     Copyright (C) 2015-2016  Cristian Ioan Vasile <cvasile@bu.edu>
     Hybrid and Networked Systems (HyNeSs) Group, BU Robotics Lab,
     Boston University
@@ -64,7 +64,7 @@ license_text='''
 
 @lexer::header {
 license_text='''
-    Lexer for TWTL formulae. 
+    Lexer for TWTL formulae.
     Copyright (C) 2015-2016  Cristian Ioan Vasile <cvasile@bu.edu>
     Hybrid and Networked Systems (HyNeSs) Group, BU Robotics Lab,
     Boston University
@@ -87,7 +87,7 @@ license_text='''
 @lexer::members {
     def getAlphabet(self):
         return self.alphabet
-    
+
     def setAlphabet(self, alphabet):
         self.alphabet = alphabet
 }
@@ -99,7 +99,7 @@ formula :   disjunction;
 
 disjunction //parse a disjunction operation or skip
     : conjunction (OR^ conjunction)*
-    ; 
+    ;
 
 conjunction //parse a conjunction operation or skip
     :   concatenation (AND^ concatenation)*

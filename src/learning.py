@@ -45,14 +45,14 @@ def learn_deadlines(formula, traces_p, traces_n):
     '''
     # 1. construct annotated DFA
     _, dfa = translate(formula, kind=DFAType.Infinity, optimize=True)
-    
+
     # 2. compute tightest deadlines for all traces
     D_p = [get_deadlines(word, dfa) for word in traces_p]
     D_n = [get_deadlines(word, dfa) for word in traces_n]
-    
+
     logging.debug('Tight deadlines for positive traces: %s', D_p)
     logging.debug('Tight deadlines for negative traces: %s', D_n)
-    
+
     m = len(D_p[0])
     d = [-float('Inf')]*m
     for k in range(m):
@@ -69,10 +69,10 @@ def learn_deadlines(formula, traces_p, traces_n):
                 min_dl = dl
             logging.debug('Tightest deadline: %d, MCR: %d', mcr, min_dl)
         d[k] = min_dl
-    
+
     # compute actual MCR - FIXME: this won't work with disjunction
     d_vec = np.asarray(d)
     MCR = np.sum([np.any(np.asarray(d_p) > d_vec) for d_p in D_p]) \
           + np.sum([np.all(np.asarray(d_n) <= d_vec) for d_n in D_n])
-    
+
     return d, MCR

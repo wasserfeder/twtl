@@ -28,7 +28,7 @@ options {
 
 @header {
 license_text='''
-    Module computes the bound of a TWTL formula. 
+    Module computes the bound of a TWTL formula.
     Copyright (C) 2015-2016  Cristian Ioan Vasile <cvasile@bu.edu>
     Hybrid and Networked Systems (HyNeSs) Group, BU Robotics Lab,
     Boston University
@@ -50,7 +50,7 @@ license_text='''
 
 @members {
     bound = 0
-    
+
     def getBound(self):
         return self.bound
 }

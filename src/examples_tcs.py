@@ -41,46 +41,46 @@ from lomap import Ts
 
 def case1_synthesis(formula, ts_file):
     _, dfa_0, dfa_inf, bdd = twtl.translate(formula, kind='both', norm=True)
-    
+
     logging.debug('alphabet: {}'.format(dfa_inf.props))
-    
+
     for u, v, d in dfa_inf.g.edges_iter(data=True):
         logging.debug('({}, {}): {}'.format(u, v, d))
-    
+
     dfa_inf.visualize(draw='matplotlib')
     plt.show()
-    
+
     logging.debug('\nEnd of translate\n\n')
-    
+
     logging.info('The bound of formula "%s" is (%d, %d)!', formula, *bdd)
     logging.info('Translated formula "%s" to normal DFA of size (%d, %d)!',
                  formula, *dfa_0.size())
     logging.info('Translated formula "%s" to infinity DFA of size (%d, %d)!',
                  formula, *dfa_inf.size())
-    
+
     logging.debug('\n\nStart policy computation\n')
-    
+
     ts = Ts.load(ts_file)
     ets = expand_duration_ts(ts)
-    
+
     for name, dfa in [('normal', dfa_0), ('infinity', dfa_inf)]:
         logging.info('Constructing product automaton with %s DFA!', name)
         pa = ts_times_fsa(ets, dfa)
         logging.info('Product automaton size is: (%d, %d)', *pa.size())
-        
+
         if name == 'infinity':
             for u in pa.g.nodes_iter():
                 logging.debug('{} -> {}'.format(u, pa.g.neighbors(u)))
-            
+
             pa.visualize(draw='matplotlib')
             plt.show()
-        
+
         # compute optimal path in PA and then project onto the TS
         policy, output, tau = compute_control_policy(pa, dfa, dfa.kind)
         logging.info('Max deadline: %s', tau)
         if policy is not None:
             logging.info('Generated output word is: %s', [tuple(o) for o in output])
-            
+
             policy = [x for x in policy if x not in ets.state_map]
             out = StringIO.StringIO()
             for u, v in zip(policy[:-1], policy[1:]):
@@ -88,7 +88,7 @@ def case1_synthesis(formula, ts_file):
             print>>out, policy[-1],
             logging.info('Generated control policy is: %s', out.getvalue())
             out.close()
-            
+
             logging.info('Relaxation is: %s',
                          twtl.temporal_relaxation(output, formula=formula))
         else:
@@ -96,17 +96,17 @@ def case1_synthesis(formula, ts_file):
 
 def case2_verification(formula, ts_file):
     _, dfa_inf, bdd  = twtl.translate(formula, kind=DFAType.Infinity, norm=True)
-    
+
     logging.info('The bound of formula "%s" is (%d, %d)!', formula, *bdd)
     logging.info('Translated formula "%s" to infinity DFA of size (%d, %d)!',
                  formula, *dfa_inf.size())
-    
+
     ts = Ts.load(ts_file)
     ts.g.add_edges_from(ts.g.edges(), weight=1)
-    
+
     for u, v in ts.g.edges_iter():
         print u, '->', v
-    
+
     result = verify(ts, dfa_inf)
     logging.info('The result of the verification procedure is %s!', result)
 
@@ -123,7 +123,7 @@ def setup_logging():
     loglevel = logging.DEBUG
     logging.basicConfig(filename='../data/examples_tcs.log', level=loglevel,
                         format=fs, datefmt=dfs)
-    
+
     root = logging.getLogger()
     ch = logging.StreamHandler(sys.stdout)
     ch.setLevel(loglevel)

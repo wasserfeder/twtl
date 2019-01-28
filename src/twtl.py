@@ -1,5 +1,5 @@
 license_text='''
-    Module implements API for translating a TWTL formula to a DFA. 
+    Module implements API for translating a TWTL formula to a DFA.
     Copyright (C) 2015-2016  Cristian Ioan Vasile <cvasile@bu.edu>
     Hybrid and Networked Systems (HyNeSs) Group, BU Robotics Lab,
     Boston University
@@ -56,7 +56,7 @@ def monitor(formula=None, kind=None, dfa=None, cutoff=None):
     elif dfa is None:
         _, dfa = translate(formula, kind=kind)
     kind = dfa.kind
-    
+
     if  kind == DFAType.Normal:
         if formula is not None:
             seq = xrange((norm(formula) if cutoff is None else cutoff) + 1)
@@ -67,7 +67,7 @@ def monitor(formula=None, kind=None, dfa=None, cutoff=None):
     else:
         raise ValueError('DFA type must be either DFAType.Normal, ' +
                        'DFAType.Infinity or "both"! {} was given!'.format(kind))
-    
+
     state = dfa.init.keys()[0]
     ret = 0
     for _ in seq:
@@ -98,7 +98,7 @@ def _init_tree(tree):
 
 def _update_tree(tree, state, prev_state, symbol, constraint=None):
     '''Updated the activity and tau values of all eventually operators based on
-    the current state, the previous state and the previous symbol. The 
+    the current state, the previous state and the previous symbol. The
     ``constraints'' parameter is used to choose which part of the formula is
     considered when evaluating disjunction operators.
     '''
@@ -184,11 +184,11 @@ def temporal_relaxation(word, formula=None, dfa=None):
     elif dfa is None:
         _, dfa = translate(formula, kind=DFAType.Infinity, optimize=False)
     assert dfa.kind == DFAType.Infinity
-    
+
     # initialize tree
     _init_tree(dfa.tree)
 #     logging.debug('Init:\n%s', _debug_pprint_tree(dfa.tree))
-    
+
     prev_state = None
     state = dfa.init.keys()[0]
     prev_w = set()
@@ -218,10 +218,10 @@ def norm(formula):
     tokens = CommonTokenStream(lexer)
     parser = twtlParser(tokens)
     phi = parser.formula()
-    
+
     # CommonTree
     t = phi.tree
-    
+
     # compute TWTL bound
     nodes = CommonTreeNodeStream(t)
     nodes.setTokenStream(tokens)
@@ -237,11 +237,11 @@ def translate(formula, kind='both', norm=False, optimize=True):
     (b) DFAType.Infinity it returns only the relaxed version; and
     (c) 'both' it returns both automata versions.
     If norm is True then the bounds of the TWTL formula are computed as well.
-    
+
     The functions returns a tuple containing in order: (a) the alphabet;
     (b) the normal automaton (if requested); (c) the infinity version automaton
     (if requested); and (d) the bounds of the TWTL formula (if requested).
-    
+
     The ``optimize'' flag is used to specify that the annotation data should be
     optimized. Note that the synthesis algorithm assumes an optimized automaton,
     while computing temporal relaxations is performed using an unoptimized
@@ -254,19 +254,19 @@ def translate(formula, kind='both', norm=False, optimize=True):
     else:
         raise ValueError('DFA type must be either DFAType.Normal, ' +
                          'DFAType.Infinity or "both"! {} was given!'.format(kind))
-    
+
     lexer = twtlLexer(ANTLRStringStream(formula))
     lexer.setAlphabet(set())
     tokens = CommonTokenStream(lexer)
     parser = twtlParser(tokens)
     phi = parser.formula()
-    
+
     # CommonTree
     t = phi.tree
-    
+
     alphabet = lexer.getAlphabet()
     result= [alphabet]
-    
+
     if DFAType.Normal in kind:
         setDFAType(DFAType.Normal)
         nodes = CommonTreeNodeStream(t)
@@ -277,7 +277,7 @@ def translate(formula, kind='both', norm=False, optimize=True):
         dfa = translator.getDFA()
         dfa.kind = DFAType.Normal
         result.append(dfa)
-    
+
     if DFAType.Infinity in kind:
         setDFAType(DFAType.Infinity)
         setOptimizationFlag(optimize)
@@ -289,14 +289,14 @@ def translate(formula, kind='both', norm=False, optimize=True):
         dfa_inf = translator.getDFA()
         dfa_inf.kind = DFAType.Infinity
         result.append(dfa_inf)
-    
+
     if norm: # compute TWTL bound
         nodes = CommonTreeNodeStream(t)
         nodes.setTokenStream(tokens)
         boundEvaluator = bound(nodes)
         boundEvaluator.eval()
         result.append(boundEvaluator.getBound())
-    
+
     if logging.getLogger().isEnabledFor(logging.DEBUG):
         for mode, name in [(DFAType.Normal, 'Normal'),
                            (DFAType.Infinity, 'Infinity')]:
@@ -312,16 +312,15 @@ def translate(formula, kind='both', norm=False, optimize=True):
                 logging.debug('[spec] tree:\n{}'.format(pdfa.tree.pprint()))
             logging.debug('[spec] No of nodes: {}'.format(pdfa.g.number_of_nodes()))
             logging.debug('[spec] No of edges: {}'.format(pdfa.g.number_of_edges()))
-    
+
     return tuple(result)
 
 if __name__ == '__main__':
 #     print translate('[H^3 !A]^[0, 8] * [H^2 B & [H^4 C]^[3, 9]]^[2, 19]',
 #                     kind=DFAType.Normal, norm=True)
-    
+
     res = translate('[H^2 A]^[0, 4] | [H^2 B]^[2, 5]',
                     kind=DFAType.Infinity, norm=True)
-    
+
     print res
     print res[1].g.nodes()
-    

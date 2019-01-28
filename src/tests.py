@@ -1,5 +1,5 @@
 license_text='''
-    Module contains various tests of TWTL translation and operations. 
+    Module contains various tests of TWTL translation and operations.
     Copyright (C) 2015-2016  Cristian Ioan Vasile <cvasile@bu.edu>
     Hybrid and Networked Systems (HyNeSs) Group, BU Robotics Lab,
     Boston University
@@ -34,7 +34,7 @@ from dfa import DFAType, setDFAType
 
 def test_accept_prop_boolean(verbose=False, show=False):
     props = ['A', 'B', 'C']
-    
+
     for kwargs in [{'boolean':True}, {'boolean':False}, {'prop':'A'}]:
         dfa = accept_prop(props, **kwargs)
         if verbose:
@@ -48,17 +48,17 @@ def test_complement(verbose=False, show=False):
 
 def test_intersection_union(verbose=False, show=False):
     props = ['A', 'B', 'C']
-    
+
     dfa1 = hold(props, prop='A', duration=1, negation=False)
     dfa1 = within(dfa1, low=1, high=5)
-    
+
     dfa2 = hold(props, prop='B', duration=2, negation=False)
     dfa2 = within(dfa2, low=0, high=4)
-    
+
     for operation in [union]: #intersection, union]:
         if verbose:
             print 'Operation:', operation.__name__
-        
+
         dfa = operation(dfa1, dfa2)
         if verbose:
             for fsa in [dfa1, dfa2, dfa]:
@@ -78,13 +78,13 @@ def test_intersection_union(verbose=False, show=False):
 
 def test_concatenation(verbose=False, show=False):
     props = ['A', 'B', 'C']
-    
+
     dfa1 = hold(props, prop='A', duration=2, negation=False)
     dfa1 = eventually(dfa1, low=1, high=5)
-    
+
     dfa2 = hold(props, prop='B', duration=3, negation=False)
     dfa2 = eventually(dfa2, low=0, high=4)
-    
+
     dfa = concatenation(dfa1, dfa2)
     if verbose:
         print dfa
@@ -103,7 +103,7 @@ def test_concatenation(verbose=False, show=False):
 
 def test_hold(verbose=False, show=False):
     props = ['A', 'B', 'C']
-    
+
     for kwargs in [{'prop':'A', 'duration':2, 'negation':False},
                    {'prop':'B', 'duration':2, 'negation':True}]:
         dfa = hold(props, **kwargs)
@@ -115,9 +115,9 @@ def test_hold(verbose=False, show=False):
 
 def test_repeat(verbose=False, show=False):
     setDFAType(DFAType.Normal)
-    
+
     props = ['A', 'B', 'C']
-    
+
     dfa = hold(props, prop='A', duration=2, negation=False)
     dfa = repeat(dfa, low=2, high=4)
     if verbose:
@@ -127,7 +127,7 @@ def test_repeat(verbose=False, show=False):
     if show:
         dfa.visualize()
         plt.show()
-     
+
     # Test with low zero
     dfa = hold(props, prop='A', duration=2, negation=False)
     dfa = repeat(dfa, low=0, high=4)
@@ -138,7 +138,7 @@ def test_repeat(verbose=False, show=False):
     if show:
         dfa.visualize()
         plt.show()
-     
+
     # Test with trap state
     dfa = hold(props, prop='A', duration=2, negation=False)
     dfa.add_trap_state()
@@ -150,12 +150,12 @@ def test_repeat(verbose=False, show=False):
     if show:
         dfa.visualize()
         plt.show()
-    
+
     # Test with truncated dfa
     dfa1 = hold(props, prop='A', duration=2, negation=False)
     dfa2 = hold(props, prop='B', duration=3, negation=False)
     dfa = union(dfa1, dfa2)
-    
+
     if verbose:
         print '[test_within] Preprocessing:'
         print dfa1
@@ -164,7 +164,7 @@ def test_repeat(verbose=False, show=False):
         print dfa
         for u, v, d in dfa.g.edges_iter(data=True):
             print (u, v), d
-    
+
     dfa = repeat(dfa, low=0, high=4)
     if verbose:
         print dfa
@@ -176,9 +176,9 @@ def test_repeat(verbose=False, show=False):
 
 def test_eventually(verbose=False, show=False):
     setDFAType(DFAType.Infinity)
-    
+
     props = ['A', 'B', 'C']
-    
+
     dfa = hold(props, prop='A', duration=2, negation=False)
     dfa = eventually(dfa, low=2, high=5)
     if verbose:
@@ -191,7 +191,7 @@ def test_eventually(verbose=False, show=False):
     if show:
         dfa.visualize(draw='matplotlib')
         plt.show()
-    
+
     # Test with low zero
     dfa = hold(props, prop='A', duration=2, negation=False)
     dfa = eventually(dfa, low=0, high=5)
@@ -205,7 +205,7 @@ def test_eventually(verbose=False, show=False):
     if show:
         dfa.visualize(draw='matplotlib')
         plt.show()
-    
+
     # Test with trap state
     dfa = hold(props, prop='A', duration=2, negation=False)
     dfa.add_trap_state()
@@ -224,10 +224,10 @@ def test_eventually(verbose=False, show=False):
 ################################################################################
 
 if __name__ == '__main__':
-    
+
     verbose = True
     visualize = True
-    
+
     # test 1: accept prop/boolean
 #     test_accept_prop_boolean(verbose=verbose, show=visualize)
 #     # test 2: complement

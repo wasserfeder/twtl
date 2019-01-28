@@ -28,7 +28,7 @@ options {
 
 @header {
 license_text='''
-    Module converts a TWTL formula to an automaton. 
+    Module converts a TWTL formula to an automaton.
     Copyright (C) 2015-2016  Cristian Ioan Vasile <cvasile@bu.edu>
     Hybrid and Networked Systems (HyNeSs) Group, BU Robotics Lab,
     Boston University
@@ -54,7 +54,7 @@ from dfa import accept_prop, complement, concatenation, hold, intersection, \
 @members {
     dfa=None
     props = None
-    
+
     def getDFA(self):
         return self.dfa
 }

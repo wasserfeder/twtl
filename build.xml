@@ -24,7 +24,7 @@ ANTLR_GEN=org.antlr.Tool
     <property name="dist"  location="dist" />
     <property name="antlr" location="${lib}/antlr-3.1.3.jar" />
     <property name="main-program" value="twtl" />
-    
+
     <target name="init">
         <!-- Create the time stamp -->
         <tstamp>
@@ -34,7 +34,7 @@ ANTLR_GEN=org.antlr.Tool
 
     <target name="twtl" depends="clean"
         description="create TWTL lexer and parser" >
-        
+
         <java classpath="${src}:${antlr}" classname="org.antlr.Tool">
               <arg path="${src}/twtl.g" />
         </java>
@@ -44,7 +44,7 @@ ANTLR_GEN=org.antlr.Tool
     	<java classpath="${src}:${antlr}" classname="org.antlr.Tool">
               <arg path="${src}/twtl2dfa.g" />
         </java>
-        
+
         <delete verbose="true">
                  <fileset dir=".">
                       <include name="*.tokens"/>
