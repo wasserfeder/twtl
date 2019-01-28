@@ -29,21 +29,21 @@ Cristian-Ioan Vasile, Derya Aksaray, and Calin Belta. <em>"Time Window Temporal 
 The package is written for python 2.7. The following python packages are required:
 <ul type="square">
     <li>NumPy</li>
-    <li>NetworkX</li>
+    <li>NetworkX (<=1.11)</li>
     <li>ParallelPython</li>
     <li>matplotlib</li>
     <li>setuptools</li>
     <li>ANTLRv3 python runtime</li>
 </ul>
-You can install the packages using:
-<code>pip install networkx, numpy, matplotlib, pp, antlr-python-runtime, setuptools</code>
+You can install the packages using:<br/>
+<code>pip install networkx==1.11, numpy, matplotlib, pp, antlr-python-runtime, setuptools</code>
 
 <h3>How to Use</h3>
 See <code>examples_tcs.py</code> for examples of the algorithms and the PyTWTL API.
 An ANT build file <code>build.xml</code> is provided to generate the lexer and parser from the ANTLR3 grammar files.
 
 <h3>License & Copying</h3>
-<pre>Copyright (C) 2015-2018  Cristian Ioan Vasile <cvasile@mit.edu>
+<pre>Copyright (C) 2015-2018  Cristian Ioan Vasile &lt;cvasile@;mit.edu&gt;<br/>
 Hybrid and Networked Systems (HyNeSs) Group, BU Robotics Lab,
 Boston University
 
