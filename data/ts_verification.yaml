@@ -1,0 +1,20 @@
+!Ts
+name: "Simple DTS"
+directed: true
+multi: false
+init: ['A1']
+final: []
+graph:
+  nodes:
+    A1: {'prop': !!set {'A': null}, 'position': [-1.0,  0.0]}
+    B2: {'prop': !!set {'B': null}, 'position': [ 0.0,  1.0]}
+    B3: {'prop': !!set {'B': null}, 'position': [ 1.0,  0.0]}
+    E4: {'prop': !!set {},          'position': [ 0.5, -0.5]}
+    A5: {'prop': !!set {'A': null}, 'position': [-0.5, -0.5]}
+  edges:
+  - [A1, A1, {'duration': 1}]
+  - [A1, B2, {'duration': 1}]
+  - [B2, B3, {'duration': 1}]
+  - [B3, E4, {'duration': 1}]
+  - [E4, A5, {'duration': 1}]
+  - [A5, A1, {'duration': 1}]

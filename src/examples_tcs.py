@@ -60,8 +60,7 @@ def case1_synthesis(formula, ts_file):
     
     logging.debug('\n\nStart policy computation\n')
     
-    ts = Ts(directed=True, multi=False)
-    ts.read_from_file(ts_file)
+    ts = Ts.load(ts_file)
     ets = expand_duration_ts(ts)
     
     for name, dfa in [('normal', dfa_0), ('infinity', dfa_inf)]:
@@ -102,9 +101,7 @@ def case2_verification(formula, ts_file):
     logging.info('Translated formula "%s" to infinity DFA of size (%d, %d)!',
                  formula, *dfa_inf.size())
     
-    ts = Ts(directed=True, multi=False)
-    ts.read_from_file(ts_file)
-    ts.g = nx.DiGraph(ts.g)
+    ts = Ts.load(ts_file)
     ts.g.add_edges_from(ts.g.edges(), weight=1)
     
     for u, v in ts.g.edges_iter():
@@ -137,12 +134,12 @@ if __name__ == '__main__':
     setup_logging()
     # case study 1: Synthesis
     phi = '[H^2 A]^[0, 6] * ([H^1 B]^[0, 3] | [H^1 C]^[1, 4]) * [H^1 D]^[0, 6]'
-    case1_synthesis(phi, '../data/ts_synthesis.txt')
+    case1_synthesis(phi, '../data/ts_synthesis.yaml')
     # case study 2: Verification
     phi1 = '[H^1 A]^[1, 2]'
-    case2_verification(phi1, '../data/ts_verification.txt')
+    case2_verification(phi1, '../data/ts_verification.yaml')
     phi2 = '[H^3 !B]^[1, 4]'
-    case2_verification(phi2, '../data/ts_verification.txt')
+    case2_verification(phi2, '../data/ts_verification.yaml')
     # case study 3: Learning
     phi_learn = '[H^1 A]^[0, 2] * [H^2 B]^[0, 3]'
     case3_learning(phi_learn, '../data/traces_simple.txt')
