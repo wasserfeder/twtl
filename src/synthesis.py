@@ -378,7 +378,7 @@ def relaxed_control_policy(tree, dfa, pa, constraint=None):
         M_ch = relaxed_control_policy(tree.left, dfa, pa, constraint)
         if tree.low == 0:
             for cpath in M_ch:
-                cpath.tau = max(len(cpath.path) - tree.high - 1, path.tau)
+                cpath.tau = max(len(cpath.path) - tree.high - 1, cpath.tau)
             return M_ch
 
         M = ControlPathsSet()
