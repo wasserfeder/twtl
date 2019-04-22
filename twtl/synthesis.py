@@ -166,7 +166,7 @@ def ts_times_fsa(ts, fsa): #FIXME: product automaton convention
     # Create the product_model
     product_model = Model(directed=True, multi=False)
 
-    init_state = (ts.init.keys()[0], fsa.init.keys()[0])
+    init_state = (next(iter(ts.init)), next(iter(fsa.init)))
     product_model.init[init_state] = 1
     product_model.g.add_node(init_state)
     if init_state[1] in fsa.final:
@@ -182,7 +182,7 @@ def ts_times_fsa(ts, fsa): #FIXME: product automaton convention
             ts_next_state = ts_next[0]
             ts_prop = ts.g.node[ts_next_state].get('prop',set())
 
-            for fsa_next_state in fsa.next_states_of_fsa(fsa_state, ts_prop):
+            for fsa_next_state in fsa.next_states(fsa_state, ts_prop):
                 next_state = (ts_next_state, fsa_next_state)
 
                 if(next_state not in product_model.g):

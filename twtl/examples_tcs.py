@@ -84,7 +84,7 @@ def case1_synthesis(formula, ts_file):
             policy = [x for x in policy if x not in ets.state_map]
             out = StringIO.StringIO()
             for u, v in zip(policy[:-1], policy[1:]):
-                print>>out, u, '->', ts.g[u][v][0]['duration'], '->',
+                print>>out, u, '->', ts.g[u][v]['duration'], '->',
             print>>out, policy[-1],
             logging.info('Generated control policy is: %s', out.getvalue())
             out.close()
