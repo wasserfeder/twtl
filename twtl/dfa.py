@@ -1,6 +1,6 @@
 license_text='''
     Module implements Time-Window Temporal Logic operations.
-    Copyright (C) 2015-2016  Cristian Ioan Vasile <cvasile@bu.edu>
+    Copyright (C) 2015-2019  Cristian Ioan Vasile <cvasile@bu.edu>
     Hybrid and Networked Systems (HyNeSs) Group, BU Robotics Lab,
     Boston University
 
@@ -101,7 +101,8 @@ class Choice(object):
 
     def __repr__(self): return self.__str__()
     def __str__(self):
-        return 'both={} left={} right={}'.format(self.both, self.left, self.right)
+        return 'both={} left={} right={}'.format(self.both, self.left,
+                                                 self.right)
 
 
 class DFATreeNode(object):
@@ -316,8 +317,7 @@ def relabel_dfa(dfa, mapping='default', start=0, copy=False):
     mapping.update(dict(zip(nodes, it.count(start))))
 
     if copy: # create new dfa
-        ret = Fsa(dfa.props, dfa.directed, dfa.multi)
-        ret.name = str(dfa.name)
+        ret = Fsa(dfa.name, dfa.props, dfa.multi)
     else: # in-place relabeling
         ret = dfa
     # relabel state, inital state and set of final states
@@ -350,21 +350,22 @@ def accept_prop(props, prop=None, boolean=None):
         assert prop in props
         guard = prop
         name = '(Prop ' + str(prop) + ')'
-        logger.debug('[accent_prop] Prop: {} Props: {}'.format(prop, props))
+        logger.debug('[accent_prop] Prop: %s Props: %s', prop, props)
     elif boolean is not None:
         assert type(boolean) == bool
         guard = '(1)' if boolean else '(0)'
         name = '(Bool ' + str(boolean) + ')'
-        logger.debug('[accent_prop] Boolean: {} Props: {}'.format(boolean, props))
+        logger.debug('[accent_prop] Boolean: %s Props: %s', boolean, props)
     else:
         raise AssertionError('Either prop or boolean must be given!')
 
-    dfa = Fsa(props, directed=True, multi=False)
+    dfa = Fsa(name, props, multi=False)
     dfa.name = name
     bitmaps = dfa.get_guard_bitmap(guard)
     ngen = it.count()
     u, v = ngen.next(), ngen.next()
-    dfa.g.add_edge(u, v, attr_dict={'weight': 0, 'input': bitmaps, 'guard' : guard, 'label': guard})
+    dfa.g.add_edge(u, v, attr_dict={'weight': 0, 'input': bitmaps,
+                                    'guard' : guard, 'label': guard})
     dfa.init[u] = 1
     dfa.final.add(v)
 
@@ -380,8 +381,8 @@ def hold(props, prop, duration, negation=False):
     assert prop in props
 
     guard = prop if not negation else '!' + prop
-    dfa = Fsa(props, directed=True, multi=False)
-    dfa.name = '(Hold {} {}{} )'.format(duration, 'not ' if negation else '', prop)
+    name = '(Hold {} {}{} )'.format(duration, 'not ' if negation else '', prop)
+    dfa = Fsa(name, props, multi=False)
     bitmaps = dfa.get_guard_bitmap(guard)
 
     ngen = it.count()
@@ -394,7 +395,8 @@ def hold(props, prop, duration, negation=False):
     dfa.final.add(v)
 
     init_tree(dfa, operation=Op.hold)
-    logger.debug('[hold] Prop: {} Duration: {} Negation: {} Props: {}'.format(prop, duration, negation, props))
+    logger.debug('[hold] Prop: %s Duration: %d Negation: %s Props: %s', prop,
+                 duration, negation, props)
     return dfa
 
 def complement(dfa):
@@ -422,8 +424,8 @@ def concatenation(dfa1, dfa2):
     assert len(dfa1.init) == 1 and len(dfa2.init) == 1
     assert len(dfa1.final) == 1 and len(dfa2.final) == 1
 
-    dfa = Fsa(dfa1.props, dfa1.directed, dfa1.multi)
-    dfa.name = '(Concat {} {} )'.format(dfa1.name, dfa2.name)
+    name = '(Concat {} {} )'.format(dfa1.name, dfa2.name)
+    dfa = Fsa(name, dfa1.props, dfa1.multi)
 
     # relabel the two DFAs to avoid state name collisions and merge the final
     # state of dfa1 with the initial state of dfa2
@@ -448,7 +450,7 @@ def concatenation(dfa1, dfa2):
         raise ValueError('DFA type must be either DFAType.Normal or ' +
                          'DFAType.Infinity! {} was given!'.format(getDFAType()))
 
-    logger.debug('[concatenation] DFA1: {} DFA2: {}'.format(dfa1.name, dfa2.name))
+    logger.debug('[concatenation] DFA1: %s DFA2: %s', dfa1.name, dfa2.name)
     return dfa
 
 def intersection(dfa1, dfa2):
@@ -464,8 +466,8 @@ def intersection(dfa1, dfa2):
     assert len(dfa1.init) == 1 and len(dfa2.init) == 1
     assert len(dfa1.final) == 1 and len(dfa2.final) == 1
 
-    dfa = Fsa(dfa1.props, dfa1.directed, dfa1.multi)
-    dfa.name = '(Intersection {} {} )'.format(dfa1.name, dfa2.name)
+    name = '(Intersection {} {} )'.format(dfa1.name, dfa2.name)
+    dfa = Fsa(name, dfa1.props, dfa1.multi)
 
     init = list(it.product(dfa1.init.keys(), dfa2.init.keys()))
     dfa.init = dict(zip(init, (1,)*len(init)))
@@ -481,21 +483,27 @@ def intersection(dfa1, dfa2):
                     if (v1, v2) not in dfa.g:
                         stack.append((v1, v2))
                     guard = '({}) & ({})'.format(d1['guard'], d2['guard'])
-                    dfa.g.add_edge((u1, u2), (v1, v2), attr_dict={'weight': 0, 'input': bitmaps, 'guard' : guard, 'label': guard})
+                    dfa.g.add_edge((u1, u2), (v1, v2),
+                                   attr_dict={'weight': 0, 'input': bitmaps,
+                                              'guard' : guard, 'label': guard})
         if u1 in dfa1.final:
             for _, v2, d2 in dfa2.g.edges_iter(u2, data=True):
                 if (u1, v2) not in dfa.g:
                     stack.append((u1, v2))
                 bitmaps = set(d2['input'])
                 guard = d2['guard']
-                dfa.g.add_edge((u1, u2), (u1, v2), attr_dict={'weight': 0, 'input': bitmaps, 'guard' : guard, 'label': guard})
+                dfa.g.add_edge((u1, u2), (u1, v2),
+                               attr_dict={'weight': 0, 'input': bitmaps,
+                                          'guard' : guard, 'label': guard})
         if u2 in dfa2.final:
             for _, v1, d1 in dfa1.g.edges_iter(u1, data=True):
                 if (v1, u2) not in dfa.g:
                     stack.append((v1, u2))
                 bitmaps = set(d1['input'])
                 guard = d1['guard']
-                dfa.g.add_edge((u1, u2), (v1, u2), attr_dict={'weight': 0, 'input': bitmaps, 'guard' : guard, 'label': guard})
+                dfa.g.add_edge((u1, u2), (v1, u2),
+                               attr_dict={'weight': 0, 'input': bitmaps,
+                                          'guard' : guard, 'label': guard})
 
     # the set of final states is the product of final sets of dfa1 and dfa2
     dfa.final = set(it.product(dfa1.final, dfa2.final))
@@ -513,7 +521,7 @@ def intersection(dfa1, dfa2):
     # relabel states
     relabel_dfa(dfa)
 
-    logger.debug('[intersection] DFA1: {} DFA2: {}'.format(dfa1.name, dfa2.name))
+    logger.debug('[intersection] DFA1: %s DFA2: %s', dfa1.name, dfa2.name)
     return dfa
 
 def union(dfa1, dfa2):
@@ -528,11 +536,12 @@ def union(dfa1, dfa2):
     assert len(dfa1.init) == 1 and len(dfa2.init) == 1
     assert len(dfa1.final) == 1 and len(dfa2.final) == 1
 
-    dfa = Fsa(dfa1.props, dfa1.directed, dfa1.multi)
-    dfa.name = '(Union {} {} )'.format(dfa1.name, dfa2.name)
+    name = '(Union {} {} )'.format(dfa1.name, dfa2.name)
+    dfa = Fsa(name, dfa1.props, dfa1.multi)
 
     # add self-loops on final states and trap states
-    attr_dict={'weight': 0, 'input': dfa.alphabet, 'guard' : '(1)', 'label': '(1)'}
+    attr_dict={'weight': 0, 'input': dfa.alphabet, 'guard' : '(1)',
+               'label': '(1)'}
     dfa1.g.add_edges_from([(s, s, attr_dict) for s in dfa1.final])
     dfa2.g.add_edges_from([(s, s, attr_dict) for s in dfa2.final])
     dfa1.add_trap_state()
@@ -554,7 +563,9 @@ def union(dfa1, dfa2):
                     if (v1, v2) not in dfa.g:
                         stack.append((v1, v2))
                     guard = '({}) & ({})'.format(d1['guard'], d2['guard'])
-                    dfa.g.add_edge((u1, u2), (v1, v2), attr_dict={'weight': 0, 'input': bitmaps, 'guard' : guard, 'label': guard})
+                    dfa.g.add_edge((u1, u2), (v1, v2),
+                                   attr_dict={'weight': 0, 'input': bitmaps,
+                                              'guard' : guard, 'label': guard})
 
     # compute set of final states
     dfa.final = set([(u, v) for u, v in dfa.g.nodes_iter()
@@ -577,7 +588,8 @@ def union(dfa1, dfa2):
             if dfa.g.has_edge(u, final):
                 bitmaps |= dfa.g[u][final]['input']
                 guard = '({}) | ({})'.format(guard, dfa.g[u][final]['guard'])
-            dfa.g.add_edge(u, final, attr_dict={'weight': 0, 'input': bitmaps, 'guard' : guard, 'label': guard})
+            dfa.g.add_edge(u, final, attr_dict={'weight': 0, 'input': bitmaps,
+                                               'guard' : guard, 'label': guard})
             if v[0] in dfa1.final: # satisfies only the left sub-formula
                 assert v[1] not in dfa2.final
                 choices.setdefault(u, Choice()).left.update(d['input'])
@@ -600,7 +612,7 @@ def union(dfa1, dfa2):
     # relabel states
     relabel_dfa(dfa)
 
-    logger.debug('[union] DFA1: {} DFA2: {}'.format(dfa1.name, dfa2.name))
+    logger.debug('[union] DFA1: %s DFA2: %s', dfa1.name, dfa2.name)
     return dfa
 
 def within(phi, low, high):
@@ -634,7 +646,8 @@ def eventually(phi_dfa, low, high):
         bitmaps = dfa.alphabet - bitmaps
 
         if state not in dfa.final and bitmaps:
-            dfa.g.add_edge(state, init, attr_dict={'weight': 0, 'input': bitmaps, 'guard' : guard, 'label': guard})
+            dfa.g.add_edge(state, init, attr_dict={'weight': 0,
+                             'input': bitmaps, 'guard' : guard, 'label': guard})
 
     # add states to accept a prefix word of any symbol of length low
     if low > 0:
@@ -642,14 +655,16 @@ def eventually(phi_dfa, low, high):
         bitmaps = dfa.get_guard_bitmap(guard)
         ngen = it.count(start=dfa.g.number_of_nodes())
         nodes = [ngen.next() for _ in range(low)]
-        attr_dict={'weight': 0, 'input': bitmaps, 'guard' : guard, 'label': guard}
+        attr_dict={'weight': 0, 'input': bitmaps, 'guard' : guard,
+                   'label': guard}
         dfa.g.add_path(nodes, **attr_dict)
         dfa.g.add_edge(nodes[-1], init, attr_dict)
         dfa.init = {nodes[0] : 1}
 
     # add counter annotation
     mark_eventually(phi_dfa, dfa, low, high)
-    logger.debug('[eventually] Low: {} High: {} DFA: {}'.format(low, high, phi_dfa.name))
+    logger.debug('[eventually] Low: %d High: %d DFA: %s', low, high,
+                 phi_dfa.name)
     return dfa
 
 def repeat(phi_dfa, low, high):
@@ -665,10 +680,11 @@ def repeat(phi_dfa, low, high):
     # remove trap states if there are any
     phi_dfa.remove_trap_states()
     # initialize the resulting dfa
-    dfa = Fsa(phi_dfa.props, phi_dfa.directed, phi_dfa.multi)
-    dfa.name = '(Repeat {} {} {} )'.format(phi_dfa.name, low, high)
+    name = '(Repeat {} {} {} )'.format(phi_dfa.name, low, high)
+    dfa = Fsa(name, phi_dfa.props, phi_dfa.multi)
     # compute the maximum number of restarts
-    b = nx.shortest_path_length(phi_dfa.g, source=init_state, target=final_state)
+    b = nx.shortest_path_length(phi_dfa.g, source=init_state,
+                                target=final_state)
     d = high - low - b + 2
     # copy dfa to dfa_aux and initialize the list of restart states
     inits = []
@@ -702,7 +718,9 @@ def repeat(phi_dfa, low, high):
             bitmaps = dfa.alphabet - bitmaps
 
             if state not in dfa.final and bitmaps:
-                dfa.g.add_edge(state, rstate, attr_dict={'weight': 0, 'input': bitmaps, 'guard' : guard, 'label': guard})
+                dfa.g.add_edge(state, rstate,
+                               attr_dict={'weight': 0, 'input': bitmaps,
+                                          'guard' : guard, 'label': guard})
         # update current states
         current_states = next_states | set([rstate])
 
@@ -714,12 +732,13 @@ def repeat(phi_dfa, low, high):
         bitmaps = dfa.get_guard_bitmap(guard)
         ngen = it.count(start=dfa.g.number_of_nodes())
         nodes = [ngen.next() for _ in range(low)]
-        attr_dict={'weight': 0, 'input': bitmaps, 'guard' : guard, 'label': guard}
+        attr_dict={'weight': 0, 'input': bitmaps, 'guard' : guard,
+                   'label': guard}
         dfa.g.add_path(nodes, **attr_dict)
         dfa.g.add_edge(nodes[-1], dfa.init.keys()[0], attr_dict)
         dfa.init = {nodes[0] : 1}
 
-    logger.debug('[within] Low: {} High: {} DFA: {}'.format(low, high, phi_dfa.name))
+    logger.debug('[within] Low: %d High: %d DFA: %s', low, high, phi_dfa.name)
     return dfa
 
 def truncate_dfa(dfa, cutoff):
@@ -727,7 +746,8 @@ def truncate_dfa(dfa, cutoff):
     the language associated with the given dfa.
     Note: It assumes that the given dfa has a finite language, i.e. it is a DAG.
 
-    Adapted from networkx.algorithms.shortest_paths.unweighted.single_source_shortest_path_length
+    Adapted from networkx.algorithms.shortest_paths.unweighted.\
+    single_source_shortest_path_length
     NetworkX is available at http://networkx.github.io.
     '''
     assert len(dfa.init) == 1 # deterministic model

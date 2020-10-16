@@ -202,7 +202,7 @@ def temporal_relaxation(word, formula=None, dfa=None):
         if state in dfa.final:
             break
         else: # compute next state
-            r = dfa.next_states_of_fsa(state, w)
+            r = dfa.next_states(state, w)
             assert len(r) == 1, 'Should be deterministic!'
             prev_state = state
             state = r[0]
