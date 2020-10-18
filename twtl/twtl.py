@@ -28,12 +28,11 @@ license_text='''
 import logging
 import itertools as it
 
-from antlr3 import ANTLRStringStream, CommonTokenStream
-from antlr3.tree import CommonTreeNodeStream
+from antlr4 import InputStream, CommonTokenStream
 
 from twtlLexer import twtlLexer
 from twtlParser import twtlParser
-from bound import bound
+from twtl_ast import TWTLAbstractSyntaxTreeExtractor
 from twtl2dfa import twtl2dfa
 from dfa import setDFAType, DFAType, Op, setOptimizationFlag
 from util import _debug_pprint_tree
@@ -59,9 +58,9 @@ def monitor(formula=None, kind=None, dfa=None, cutoff=None):
 
     if  kind == DFAType.Normal:
         if formula is not None:
-            seq = xrange((norm(formula) if cutoff is None else cutoff) + 1)
+            seq = range((norm(formula) if cutoff is None else cutoff) + 1)
         else:
-            seq = xrange(cutoff + 1)
+            seq = range(cutoff + 1)
     elif kind == DFAType.Infinity:
         seq = it.count() if cutoff is None else xrange(cutoff + 1)
     else:
@@ -214,20 +213,16 @@ def norm(formula):
     '''Computes the bounds of the given TWTL formula and returns a 2-tuple
     containing the lower and upper bounds, respectively.
     '''
-    lexer = twtlLexer(ANTLRStringStream(formula))
+    lexer = twtlLexer(InputStream(formula))
     tokens = CommonTokenStream(lexer)
     parser = twtlParser(tokens)
     phi = parser.formula()
 
-    # CommonTree
-    t = phi.tree
+    # AST
+    ast = TWTLAbstractSyntaxTreeExtractor().visit(t)
 
     # compute TWTL bound
-    nodes = CommonTreeNodeStream(t)
-    nodes.setTokenStream(tokens)
-    boundEvaluator = bound(nodes)
-    boundEvaluator.eval()
-    return boundEvaluator.getBound()
+    return ast.bounds()
 
 def translate(formula, kind='both', norm=False, optimize=True):
     '''Converts a TWTL formula into an FSA. It can returns both a normal FSA or
@@ -255,47 +250,32 @@ def translate(formula, kind='both', norm=False, optimize=True):
         raise ValueError('DFA type must be either DFAType.Normal, ' +
                          'DFAType.Infinity or "both"! {} was given!'.format(kind))
 
-    lexer = twtlLexer(ANTLRStringStream(formula))
-    lexer.setAlphabet(set())
+    lexer = twtlLexer(InputStream(formula))
     tokens = CommonTokenStream(lexer)
     parser = twtlParser(tokens)
     phi = parser.formula()
 
-    # CommonTree
-    t = phi.tree
+    # AST
+    ast = TWTLAbstractSyntaxTreeExtractor().visit(t)
 
-    alphabet = lexer.getAlphabet()
+    alphabet = ast.propositions()
     result= [alphabet]
 
     if DFAType.Normal in kind:
         setDFAType(DFAType.Normal)
-        nodes = CommonTreeNodeStream(t)
-        nodes.setTokenStream(tokens)
-        translator = twtl2dfa(nodes)
-        translator.props = alphabet
-        translator.eval()
-        dfa = translator.getDFA()
+        dfa = twtl2dfa(ast, alphabet)
         dfa.kind = DFAType.Normal
         result.append(dfa)
 
     if DFAType.Infinity in kind:
         setDFAType(DFAType.Infinity)
         setOptimizationFlag(optimize)
-        nodes = CommonTreeNodeStream(t)
-        nodes.setTokenStream(tokens)
-        translator = twtl2dfa(nodes)
-        translator.props = alphabet
-        translator.eval()
-        dfa_inf = translator.getDFA()
+        dfa_inf = twtl2dfa(ast, alphabet)
         dfa_inf.kind = DFAType.Infinity
         result.append(dfa_inf)
 
     if norm: # compute TWTL bound
-        nodes = CommonTreeNodeStream(t)
-        nodes.setTokenStream(tokens)
-        boundEvaluator = bound(nodes)
-        boundEvaluator.eval()
-        result.append(boundEvaluator.getBound())
+        result.append(ast.bounds())
 
     if logging.getLogger().isEnabledFor(logging.DEBUG):
         for mode, name in [(DFAType.Normal, 'Normal'),
