@@ -74,18 +74,35 @@ class TWTLFormula(object):
         self.__string = None
         self.__hash = None
 
-    def bound(self):
-        '''Computes the bound of the TWTL formula.'''
-        if self.op in (Operation.AND, Operation.OR):
-            return max(self.left.bound(), self.right.bound())
+    def bounds(self):
+        '''Computes the bounds of the TWTL formula.'''
+        if self.op == Operation.AND:
+            left_bounds = self.left.bounds()
+            right_bounds = self.right.bounds()
+            low_bound = max(left_bounds[0], right_bounds[0])
+            upper_bound = max(left_bounds[1], right_bounds[1])
+            return [low_bound, upper_bound]
+        elif self.op == Operation.OR:
+            left_bounds = self.left.bounds()
+            right_bounds = self.right.bounds()
+            low_bound = min(left_bounds[0], right_bounds[0])
+            upper_bound = max(left_bounds[1], right_bounds[1])
+            return [low_bound, upper_bound]
         elif self.op == Operation.NOT:
-            return self.child.bound()
+            return self.child.bounds()
         elif self.op == Operation.HOLD:
-            return self.duration
+            return [self.duration, self.duration]
         elif self.op == Operation.CONCAT:
-            return 1 + self.left.bound() + self.right.bound()
+            left_bounds = self.left.bounds()
+            right_bounds = self.right.bounds()
+            low_bound = 1 + left_bounds[0] + right_bounds[0]
+            upper_bound = 1 + left_bounds[1] + right_bounds[1]
+            return [low_bound, upper_bound]
         elif self.op == Operation.WITHIN:
-            return self.high
+            child_bounds = self.child.bounds()
+            assert child_bound[0] <= self.high - self.low, \
+                'Child formula is unfeasible within time window'!
+            return [self.low + child_bounds[0], self.high)
 
     def propositions(self):
         '''Computes the set of propositions involved in the TWTL formula.'''
