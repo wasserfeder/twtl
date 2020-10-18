@@ -5,8 +5,8 @@
 # ANTLR generated Lexers and Parsers, and other files
 **/*Lexer.py
 **/*Parser.py
-src/bound.py
-src/twtl2dfa.py
+**/*Listener.py
+**/*Visitor.py
 
 # Sandbox (experimental code) and dependencies
 **/sandbox_*
