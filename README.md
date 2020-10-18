@@ -1,7 +1,7 @@
 <h3>Overview</h3>
 <strong>T</strong>ime <strong>W</strong>indow <strong>T</strong>emporal <strong>L</strong>ogic (TWTL) is a bounded temporal logic used to specify rich properties<a href="#1">[1]</a>. Relaxed versions of TWTL formulae are also considered in the sense of extending the deadlines of time windows. An automata based approach is proposed to solve synthesis, verification and learning problems. The key ingredient is a construction algorithm of annotated Deterministic Finite State Automata (DFA) from TWTL properties. See <a href="#1">[1]</a> for more details.
 
-PyTWTL is a Python 2.7 implementation of the algorithms proposed in <a href="#1">[1]</a> based on LOMAP <a href="#2">[2]</a>, ANTLRv3 <a href="#3">[3]</a> and networkx <a href="#4">[4]</a> libraries. PyTWTL implementation is released under the GPLv3 license.
+PyTWTL is a Python implementation of the algorithms proposed in <a href="#1">[1]</a> based on LOMAP <a href="#2">[2]</a>, ANTLRv4 <a href="#3">[3]</a> and networkx <a href="#4">[4]</a> libraries. PyTWTL implementation is released under the GPLv3 license.
 The library can be used to:
 <ul type="square">
     <li>construct DFAs and annotated DFAs from TWTL formulae;</li>
@@ -14,7 +14,7 @@ The library can be used to:
     <li>learn the parameters of a TWTL formula, i.e. the deadlines.</li>
 </ul>
 
-The parsing of TWTL formulae is performed using ANTLRv3 framework. The package provides grammar files which may be used to generate lexers and parsers for other programming languages such as Java, C/C++, Ruby. To support Python 2.7, we used version 3.1.3 of ANTLRv3 and the corresponding Python runtime ANTLR library, which we included in our distribution for convenience.
+The parsing of TWTL formulae is performed using ANTLRv4 framework. The package provides a grammar file which may be used to generate lexers and parsers for other programming languages such as Java, C/C++, Ruby.
 
 <h3>Citation</h3>
 If you use TWTL or PyTWTL, then please consider citing the reference paper:
@@ -24,28 +24,39 @@ Cristian-Ioan Vasile, Derya Aksaray, and Calin Belta. <em>"Time Window Temporal 
 
 <h3>Download</h3>
 <a href="https://github.com/wasserfeder/twtl.git" target="_blank">Download</a>
+<br/>or<br/>
+<code>git clone git@github.com:wasserfeder/twtl.git</code>
 
 <h3>Requirements</h3>
 The package is written for python 2.7. The following python packages are required:
 <ul type="square">
     <li>NumPy</li>
     <li>NetworkX (<=1.11)</li>
-    <li>ParallelPython</li>
     <li>matplotlib</li>
     <li>setuptools</li>
-    <li>ANTLRv3 python runtime</li>
+    <li>ANTLRv4 python runtime</li>
 </ul>
 You can install the packages using:<br/>
-<code>pip install networkx==1.11, numpy, matplotlib, pp, antlr-python-runtime, setuptools</code>
+<code>pip install networkx==1.11, numpy, matplotlib, antlr4-python2-runtime==4.7.1, setuptools</code>
+
+Also download the <a href="https://www.antlr.org/download/antlr-4.7.1-complete.jar" target="_blank">ANTLR4</a> library and set it up using
+<code><pre>
+cd <download_directory>
+wget 'https://www.antlr.org/download/antlr-4.7.1-complete.jar'
+echo "export CLASSPATH=\".:$PWD/lib/antlr-4.7.1-complete.jar:$CLASSPATH\"" >> ~/.bashrc
+echo "alias antlr4=\"java -jar $PWD/lib/antlr-4.7.1-complete.jar -visitor\"" >> ~/.bashrc
+echo "alias grun=\"java org.antlr.v4.gui.TestRig\"" >> ~/.bashrc
+</pre></code>
+
 
 <h3>How to Use</h3>
 See <code>examples_tcs.py</code> for examples of the algorithms and the PyTWTL API.
-An ANT build file <code>build.xml</code> is provided to generate the lexer and parser from the ANTLR3 grammar files.
+An ANT build file <code>build.xml</code> is provided to generate the lexer and parser from the ANTLR4 grammar files.
 
 <h3>License & Copying</h3>
-<pre>Copyright (C) 2015-2018  Cristian Ioan Vasile &lt;cvasile@;mit.edu&gt;<br/>
-Hybrid and Networked Systems (HyNeSs) Group, BU Robotics Lab,
-Boston University
+<pre>Copyright (C) 2015-2020  Cristian Ioan Vasile &lt;cvasile@lehigh.edu&gt;<br/>
+Explainable Robotics Lab (ERL), Autonomous and Intelligent Robotics Lab
+Lehigh University
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -63,7 +74,7 @@ along with this program.  If not, see &lt;http://www.gnu.org/licenses/&gt;.
 
 A copy of the GNU General Public License is included in the source folder in a file called 'gpl.txt'.
 
-TWTL uses the ANTLR (version 3.1.3) third party Java library to generate the lexers and parsers. It is included for convenience in the 'lib' folder of the distribution source tree. The library can be downloaded from <a href="https://github.com/antlr/website-antlr3/tree/gh-pages/download" target="_blank">https://github.com/antlr/website-antlr3/tree/gh-pages/download</a>.
+TWTL uses the ANTLR (version 4) third party Java library to generate the lexers and parsers.
 See the file names 'license.txt' for copyright notices and license information of packages used in PyTWTL.
 
 <h3>References</h3>
