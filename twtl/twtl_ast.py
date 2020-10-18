@@ -199,7 +199,8 @@ class TWTLAbstractSyntaxTreeExtractor(twtlVisitor):
 
 
 if __name__ == '__main__':
-    lexer = twtlLexer(InputStream("[A && !B]^[0, 3] && [H^2 C * H^6 E]^[1, 2] || [H^2 !D]^[1, 7]"))
+    lexer = twtlLexer(InputStream("[A && !B]^[0, 3] && [H^2 C * H^6 E]^[1, 2]"
+                                  " || [H^2 !D]^[1, 7]"))
     tokens = CommonTokenStream(lexer)
 
     parser = twtlParser(tokens)
