@@ -1,8 +1,8 @@
 /**
  *  Grammar file for Time Window Temporal Logic.
- *  Copyright (C) 2015-2016  Cristian Ioan Vasile <cvasile@bu.edu>
- *  Hybrid and Networked Systems (HyNeSs) Group, BU Robotics Lab,
- *  Boston University
+ *  Copyright (C) 2015-2020  Cristian Ioan Vasile <cvasile@lehigh.edu>
+ *  Explainable Robotics Lab (ERL), Autonomous and Intelligent Robotics Lab
+ *  Lehigh University
  *
  *  This program is free software: you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,30 +19,12 @@
  */
 grammar twtl;
 
-options {
-    language = Python;
-    output = AST;
-    ASTLabelType = CommonTree;
-}
-
-tokens {
-    // Boolean operators
-    AND = '&';
-    OR  = '|';
-    NOT = '!';
-
-    // Temporal operators
-    HOLD   = 'H';
-    WITHIN = 'W';
-    CONCAT = '*';
-}
-
 @header {
 license_text='''
     Parser for TWTL formulae.
-    Copyright (C) 2015-2016  Cristian Ioan Vasile <cvasile@bu.edu>
-    Hybrid and Networked Systems (HyNeSs) Group, BU Robotics Lab,
-    Boston University
+    Copyright (C) 2015-2020  Cristian Ioan Vasile <cvasile@lehigh.edu>
+    Explainable Robotics Lab (ERL), Autonomous and Intelligent Robotics Lab
+    Lehigh University
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -57,17 +39,14 @@ license_text='''
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
-}
-
-@members {
 }
 
 @lexer::header {
 license_text='''
     Lexer for TWTL formulae.
-    Copyright (C) 2015-2016  Cristian Ioan Vasile <cvasile@bu.edu>
-    Hybrid and Networked Systems (HyNeSs) Group, BU Robotics Lab,
-    Boston University
+    Copyright (C) 2015-2020  Cristian Ioan Vasile <cvasile@lehigh.edu>
+    Explainable Robotics Lab (ERL), Autonomous and Intelligent Robotics Lab
+    Lehigh University
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -82,14 +61,6 @@ license_text='''
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
-}
-
-@lexer::members {
-    def getAlphabet(self):
-        return self.alphabet
-
-    def setAlphabet(self, alphabet):
-        self.alphabet = alphabet
 }
 
 //parser entry point
@@ -98,26 +69,26 @@ prog:   formula ;
 formula :   disjunction;
 
 disjunction //parse a disjunction operation or skip
-    : conjunction (OR^ conjunction)*
+    : conjunction (OR conjunction)*
     ;
 
 conjunction //parse a conjunction operation or skip
-    :   concatenation (AND^ concatenation)*
+    :   concatenation (AND concatenation)*
     ;
 
 concatenation //parse a concatenation operation or skip
-    :   temporal (CONCAT^ temporal)*
+    :   temporal (CONCAT temporal)*
     ;
 
 temporal //parse hold or within operators or skip
-    : HOLD^ '^'! duration=INT PROP
-    | HOLD '^' duration=INT NOT p=PROP -> ^(HOLD $duration ^(NOT $p))
-    | ('[' phi=formula ']' '^' '[' low=INT ',' high=INT ']') -> ^(WITHIN['W'] $phi $low $high)
+    : HOLD '^'! duration=INT PROP
+    | HOLD '^' duration=INT NOT p=PROP
+    | ('[' phi=formula ']' '^' '[' low=INT ',' high=INT ']')
     | negation
     ;
 
 negation //parse a not operation
-    : (NOT^)? atom
+    : (NOT)? atom
     ;
 
 atom //parse proposition, constants or formula
@@ -139,6 +110,16 @@ HGLETTERALL : ('A'..'G') | ('I' .. 'V') | ('X' .. 'Z'); //allowed higher case le
 fragment
 LETTER      : LWLETTER | HGLETTER; //letter
 
+// Boolean operators
+AND = '&';
+OR  = '|';
+NOT = '!';
+
+// Temporal operators
+HOLD   = 'H';
+//WITHIN = 'W';
+CONCAT = '*';
+
 //tokens
 //match an integer
 INT : ('0' | (('1'..'9')DIGIT*))
@@ -149,19 +130,10 @@ TRUE : 'True' | 'true';
 FALSE : 'False' | 'false';
 
 //match a proposition
-PROP  : ((LWLETTER | HGLETTERALL)('_' | LETTER | DIGIT)*)
-    {
-        if str($text).lower() not in ('true', 'false'):
-            self.alphabet.add(str($text));
-    }
-    ;
+PROP  : ((LWLETTER | HGLETTERALL)('_' | LETTER | DIGIT)*);
 
 //match a line comment
-LINECMT : ('//')(~('\n'|'\r'))*
-    { self.skip()}
-    ; //line comment
+LINECMT : ('//')(~('\n'|'\r'))* -> skip; //line comment
 
 //match a whitespace
-WS  : (('\n' | '\r' | '\f' | '\t' | /*'\v' |*/ ' ')+)
-    { self.skip()}
-    ; //whitespaces
+WS  : (('\n' | '\r' | '\f' | '\t' | /*'\v' |*/ ' ')+) -> skip; //whitespaces
