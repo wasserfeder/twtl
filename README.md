@@ -1,4 +1,4 @@
-<h4> Please put ,<em> modified_dijkstra.py </em> and <em> wfse_product.py </em> inside lomap/algorithms.</h4> 
+<h4> Please put <em> modified_dijkstra.py </em> and <em> wfse_product.py </em> inside lomap/algorithms.</h4> 
 
 <h3>Overview</h3>
 <strong>T</strong>ime <strong>W</strong>indow <strong>T</strong>emporal <strong>L</strong>ogic (TWTL) is a bounded temporal logic used to specify rich properties<a href="#1">[1]</a>. Relaxed versions of TWTL formulae are also considered in the sense of extending the deadlines of time windows. An automata based approach is proposed to solve synthesis, verification and learning problems. The key ingredient is a construction algorithm of annotated Deterministic Finite State Automata (DFA) from TWTL properties. See <a href="#1">[1]</a> for more details.
