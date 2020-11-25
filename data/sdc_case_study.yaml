@@ -1,0 +1,64 @@
+!Ts
+nT1me: "Simple DTS"
+directed: true
+multi: false
+init: ['Base']
+final: []
+graph:
+  nodes:
+    Base: {'prop': !!set {}, 'position': [0]}
+    A: {'prop': !!set {'A': null}, 'position': [1]}
+    B: {'prop': !!set {'B': null}, 'position': [2]}
+    C: {'prop': !!set {'C': null}, 'position': [3]}
+    D: {'prop': !!set {'D': null}, 'position': [4]}
+    E: {'prop': !!set {'E': null}, 'position': [5]}
+    F: {'prop': !!set {}, 'position': [6]}
+    G: {'prop': !!set {}, 'position': [7]}
+    H: {'prop': !!set {}, 'position': [8]}
+    I: {'prop': !!set {}, 'position': [9]}
+    J: {'prop': !!set {'O': null}, 'position': [10]}
+    K: {'prop': !!set {}, 'position': [11]}
+    L: {'prop': !!set {}, 'position': [12]}
+    M: {'prop': !!set {}, 'position': [13]}
+
+  edges:
+  - [Base, Base, {'duration': 1, 'weight': 1}] 
+  - [A, A, {'duration': 1, 'weight': 1}]
+  - [B, B, {'duration': 1, 'weight': 1}]
+  - [C, C, {'duration': 1, 'weight': 1}]
+  - [D, D, {'duration': 1, 'weight': 1}]
+  - [E, E, {'duration': 1, 'weight': 1}]
+  - [F, F, {'duration': 1, 'weight': 1}]
+  - [G, G, {'duration': 1, 'weight': 1}]
+  - [H, H, {'duration': 1, 'weight': 1}]
+  - [I, I, {'duration': 1, 'weight': 1}]
+  - [J, J, {'duration': 1, 'weight': 1}]
+  - [K, K, {'duration': 1, 'weight': 1}]
+  - [L, L, {'duration': 1, 'weight': 1}]
+
+  - [Base, F, {'duration': 1, 'weight': 1}]
+  - [F, G, {'duration': 2, 'weight': 1}]
+  - [F, D, {'duration': 1, 'weight': 1}]
+  - [F, H, {'duration': 3, 'weight': 1}]
+  - [G, E, {'duration': 1, 'weight': 1}]
+  - [G, J, {'duration': 3, 'weight': 1}]
+  - [J, K, {'duration': 2, 'weight': 1}]
+  - [K, A, {'duration': 1, 'weight': 1}]
+  - [H, I, {'duration': 1, 'weight': 1}]
+  - [I, J, {'duration': 1, 'weight': 1}]
+  - [H, J, {'duration': 4, 'weight': 1}]
+  - [H, L, {'duration': 2, 'weight': 1}]
+  - [L, C, {'duration': 1, 'weight': 1}]
+  - [C, L, {'duration': 1, 'weight': 1}]
+  - [L, M, {'duration': 3, 'weight': 1}]
+  - [M, B, {'duration': 1, 'weight': 1}]
+
+
+
+
+
+
+
+
+
+
