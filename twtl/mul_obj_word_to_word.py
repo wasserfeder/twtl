@@ -201,7 +201,7 @@ def wfse_constructor(task_case):
     wfse.init = set() # HACK
 
     # add states
-    wfse.g.add_nodes_from(['q0', 'q1', 'q2', 'q3','q4','q6'])
+    wfse.g.add_nodes_from(['q0', 'q1', 'q2', 'q3','q4','q5','q6'])
 
     # add transitions
     pass_through_symbols = [(symbol, symbol, 1) for symbol in wfse.prop_bitmaps
@@ -229,11 +229,14 @@ def wfse_constructor(task_case):
     if (user_preference == '3'): 
         print("substitution")
 
-        in_symbol = wfse.bitmap_of_props(set(['D']))
+        in_symbol = wfse.bitmap_of_props(set(['E']))
         out_symbol = wfse.bitmap_of_props(set(['A']))
         # out_symbol = -1
         weighted_symbols = [(in_symbol, out_symbol, 1)]
         wfse.g.add_edge('q0', 'q4', attr_dict={'symbols': weighted_symbols})
+        wfse.g.add_edge('q4', 'q4', attr_dict={'symbols': weighted_symbols})
+
+
 
         in_symbol = wfse.bitmap_of_props(set())
         out_symbol = wfse.bitmap_of_props(set())
@@ -246,11 +249,11 @@ def wfse_constructor(task_case):
         in_symbol = wfse.bitmap_of_props(set(['C']))
         # out_symbol = wfse.bitmap_of_props(set(['A']))
         out_symbol = -1
-        weighted_symbols = [(in_symbol, out_symbol, 3)]
+        weighted_symbols = [(in_symbol, out_symbol, 1)]
         wfse.g.add_edge('q4', 'q6', attr_dict={'symbols': weighted_symbols})
 
 
-        weighted_symbols = [(-1, out_symbol, 1)]
+        weighted_symbols = [(-1, -1, 1)]
         wfse.g.add_edge('q6', 'q0', attr_dict={'symbols': weighted_symbols})
 
     # set the initial state
@@ -287,7 +290,10 @@ def main():
 
 
     # phi_sdc = '(H^15 !O) & [H^2 A] ^ [0,7]'
-    phi_sdc = '(H^10 !O) & [H^1 A] ^ [0,7]'
+    phi_sdc = '(H^15 !O) & [H^2 A] ^ [0,10]'
+
+    # phi_sdc = '([H^1 E]^ [0,5] & [H^1 C] ^[0,10])' # Path exists
+
     # phi_sdc = '[H^2 D] ^ [0,5]'
 
     # phi_sdc = '[H^3 A] ^ [0,13] & (H^15 !O)' 
@@ -296,102 +302,6 @@ def main():
     
     twtl_synthesis(phi_sdc, '../data/sdc_word.yaml', wfse)
 
-
-    # twtl_synthesis(phi_sdc, '../data/test_pareto.yaml', wfse)
-
-    # phi_sdc = '[H^5 C] ^ [0,15] & [H^2 B] ^ [0,30]'
-
-    # twtl_synthesis(phi_sdc, '../data/sdc_case_study.yaml', wfse)
-
-
-
-
-
-
-
-
-
-
-
-
-
-    # product_model = ts_times_wfse_times_fsa(ts, wfse, dfa)
-
-    # print('Product: Init:', product_model.init) # initial states
-    # print('Product: Final:', product_model.final) # final states
-    # print('product_model_edges:', product_model.g.edges(data=True))
-    # print('TS_edge_data:', ts.g.edges(data=True))
-    # print('\n\n\n')
-
-
-    # # get initial state in product model -- should be only one
-    # # Convert the sets of initial and final states into lists
-    # init_states = list(product_model.init)
-    # final_states = list(product_model.final)
-    # dijkstra_length = []    # This list stores the Dijkstra path lengths for all final states 
-
-
-    # for parameter in np.arange(0.1,1,0.1):
-
-    #     # Iterate over all final states and find the correponding path lenths and paths
-    #     for each_state in product_model.final:
-    #         print(each_state)        
-    #         # length = nx.dijkstra_path_length(product_model.g, init_states[0], each_state,weight='weight')
-    #         length = modified_dijkstra.dijkstra_path_length(product_model.g, init_states[0], each_state,weight='weight', parameter=parameter)
-
-
-    #         dijkstra_length.append(length)
-    #     print("length:",dijkstra_length)
-
-
-    #     if (not dijkstra_length):
-    #         robot_current_state = ts.init
-    #         print("No feasible final states, deleting the tasks...")
-    #         return
-
-    #     # Get the index corresponding to the minimum cost and retrieve the corresponding final state
-
-    #     pa_optimal_index = np.argmin(dijkstra_length)
-    #     pa_optimal_final_state = final_states[pa_optimal_index]
-    #     print("pa_optimal_final_state:", pa_optimal_final_state)
-
-    #     # Find out the min length path with the optimal final state as a target using Dijkstra 
-
-
-    #     # pa_optimal_path = nx.dijkstra_path(product_model.g, init_states[0],pa_optimal_final_state,weight='weight')
-    #     pa_optimal_path = modified_dijkstra.dijkstra_path(product_model.g, init_states[0],pa_optimal_final_state,weight='weight',parameter=parameter)
-
-
-    #     # pa_optimal_path = dijkstra.source_to_target_dijkstra(product_model.g, init_states[0],pa_optimal_final_state,weight='weight')
-
-    #     # pa_optimal_cost = nx.dijkstra_path_length(product_model.g, init_states[0],pa_optimal_final_state,weight='weight')
-    #     pa_optimal_cost = modified_dijkstra.dijkstra_path_length(product_model.g, init_states[0],pa_optimal_final_state,weight='weight',parameter=parameter)
-
-    #     print("TOTAL COST:", pa_optimal_cost)
-    #     # pa_optimal_path = nx.bidirectional_dijkstra(product_model.g, init_states[0],pa_optimal_final_state,weight='weight')
-    #     # pa_optimal_path = nx.astar_path(product_model.g, init_states[0],pa_optimal_final_state,weight='weight')
-
-    #     print("Optimal_path", pa_optimal_path)
-
-    #     # Obtain the individual optimal paths for each component 
-    #     ts_optimal_path, wfse_state_path, fsa_state_path = zip(*pa_optimal_path)
-
-    #     print('TS: Optimal Trajectory:', ts_optimal_path)
-    #     print('WFSE: Optimal Trajectory:', wfse_state_path)
-    #     print('FSA: Optimal Trajectory:', fsa_state_path)
-
-    #     print('WFSE_nodes_size:', wfse.g.number_of_nodes())
-    #     print('wfse_edges_size:', wfse.g.number_of_edges())
-    #     print('PA_nodes_size:', product_model.g.number_of_nodes())
-    #     print('PA_edges_size:', product_model.g.number_of_edges())
-
-
-    #     print('Symbol translations:')
-    #     for ts_state, state, next_state in zip(ts_optimal_path[1:], pa_optimal_path,
-    #                                            pa_optimal_path[1:]):
-    #         transition_data = product_model.g[state][next_state]
-    #         original_symbol, transformed_symbol = transition_data['prop']
-    #         print(ts_state, ':', original_symbol, '->', transformed_symbol)
 
 
 if __name__ == '__main__':
