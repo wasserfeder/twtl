@@ -1,10 +1,10 @@
 #! /usr/bin/python
 
-# Test case study (SDC) for both task and deadline relaxation using pareto optimal Dijkstra 
+# Test case study (SDC) for both task and deadline relaxation using pareto optimal Dijkstra
 
 
 
-from __future__ import print_function
+# from __future__ import print_function
 import networkx as nx
 from lomap import Fsa, Ts, Wfse, ts_times_wfse_times_fsa_pareto
 from lomap.algorithms import product, dijkstra, modified_dijkstra
@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import logging, sys
-import StringIO
+# import StringIO
 import networkx as nx
 import matplotlib.pyplot as plt
 import twtl
@@ -21,7 +21,7 @@ from synthesis import expand_duration_ts, compute_control_policy, ts_times_fsa,\
                       verify
 from learning import learn_deadlines
 from lomap import Ts, Wfse, ts_times_wfse_times_fsa
-from platypus import NSGAII, DTLZ2
+# from platypus import NSGAII, DTLZ2
 from networkx.readwrite import json_graph
 
 
@@ -55,7 +55,7 @@ def twtl_synthesis(formula, ts_file, wfse):
 
     for name, dfa in [('normal', dfa_0), ('infinity', dfa_inf)]:
         logging.info('Constructing product automaton with %s DFA!', name)
-        pa = ts_times_wfse_times_fsa_pareto(ets,wfse,dfa)  
+        pa = ts_times_wfse_times_fsa_pareto(ets,wfse,dfa)
         # logging.info('Product automaton size is: (%d, %d)', *pa.size())
 
         if name == 'infinity':
@@ -76,19 +76,19 @@ def twtl_synthesis(formula, ts_file, wfse):
 
         # Iterate over all final states and find the correponding path lenths and paths
 
-        for parameter in np.arange(0.1,1,0.1): 
+        for parameter in np.arange(0.1,1,0.1):
             print("-----------------------------------")
 
-            dijkstra_length = []    # This list stores the modified Dijkstra path lengths for all final states 
-            old_dijkstra_length = []  #  This list stores the Dijkstra path lengths for all final states 
- 
+            dijkstra_length = []    # This list stores the modified Dijkstra path lengths for all final states
+            old_dijkstra_length = []  #  This list stores the Dijkstra path lengths for all final states
+
 
             for each_state in product_model.final:
 
-                # print("final_state",each_state) 
-                # print("param:", parameter)  
+                # print("final_state",each_state)
+                # print("param:", parameter)
 
-                # The old cost (using the original Dijkstra implementation) is taken into account just for comparison      
+                # The old cost (using the original Dijkstra implementation) is taken into account just for comparison
                 old_length = nx.dijkstra_path_length(product_model.g, init_states[0], each_state,weight='weight')
                 length= modified_dijkstra.dijkstra_path_length(product_model.g, init_states[0], each_state,weight='weight', parameter=parameter, obj_data=True)
 
@@ -115,7 +115,7 @@ def twtl_synthesis(formula, ts_file, wfse):
             print("old_optimal_final_state:", old_optimal_final_state)
 
 
-            # Find out the min length path with the optimal final state as a target using Dijkstra 
+            # Find out the min length path with the optimal final state as a target using Dijkstra
             old_optimal_path = nx.dijkstra_path(product_model.g, init_states[0],old_optimal_final_state,weight='weight')
             pa_optimal_path, obj_one, obj_two = modified_dijkstra.dijkstra_path(product_model.g, init_states[0],target= pa_optimal_final_state,weight='weight',parameter=parameter, obj_data=True)
 
@@ -133,7 +133,7 @@ def twtl_synthesis(formula, ts_file, wfse):
             # print("Optimal_path", pa_optimal_path)
             # print("old_opt_path", old_optimal_path)
 
-            # Obtain the individual optimal paths for each component 
+            # Obtain the individual optimal paths for each component
             ts_optimal_path, wfse_state_path, fsa_state_path = zip(*pa_optimal_path)
             old_ts_optimal_path, old_wfse_state_path, old_fsa_state_path = zip(*old_optimal_path)
 
@@ -143,7 +143,7 @@ def twtl_synthesis(formula, ts_file, wfse):
             # data_tree = json_graph.tree_graph(data)
 
             # To obtain each solution only once
-            if (obj_one not in o1) & (obj_two not in o2): 
+            if (obj_one not in o1) & (obj_two not in o2):
 
                 # print('TS: Optimal Trajectory:', ts_optimal_path)
                 print('WFSE: Optimal Trajectory:', wfse_state_path)
@@ -165,7 +165,7 @@ def twtl_synthesis(formula, ts_file, wfse):
                                                    pa_optimal_path[1:]):
                 transition_data = product_model.g[state][next_state]
                 original_symbol, transformed_symbol = transition_data['prop']
-                # if original_symbol ==  set([]) & transformed_symbol ==  set([]): 
+                # if original_symbol ==  set([]) & transformed_symbol ==  set([]):
                 #     continue
                 print(ts_state, ':', original_symbol, '->', transformed_symbol)
 
@@ -180,7 +180,7 @@ def twtl_synthesis(formula, ts_file, wfse):
 
 
     x = np.arange(0.1,1,0.1)
-    y = mul_obj_cost 
+    y = mul_obj_cost
 
     fig = plt.figure()
     ax1 = fig.add_subplot(211)
@@ -216,21 +216,21 @@ def wfse_constructor(task_case):
     user_preference = task_case
 
 
-    if (user_preference == '2'): 
+    if (user_preference == '2'):
 
         print("deletion")
 
         # in_symbol = wfse.bitmap_of_props(set(['E']))
         in_symbol = -1
         # out_symbol = wfse.bitmap_of_props(set())
-        out_symbol= wfse.bitmap_of_props(set(['A'])) 
+        out_symbol= wfse.bitmap_of_props(set(['A']))
         # weighted_symbols = [(in_symbol, out_symbol, 2)]
         weighted_symbols = [(in_symbol, out_symbol, 10)]
         wfse.g.add_edge('q0', 'q1', attr_dict={'symbols': weighted_symbols})
-        weighted_symbols = [(-1, -1, 0)]    
+        weighted_symbols = [(-1, -1, 0)]
         wfse.g.add_edge('q1', 'q0', attr_dict={'symbols': weighted_symbols})
 
-    if (user_preference == '3'): 
+    if (user_preference == '3'):
         print("substitution")
 
         in_symbol = wfse.bitmap_of_props(set(['E']))
@@ -350,7 +350,7 @@ def wfse_constructor(task_case):
 
 
     # set the initial state
-    wfse.init.add('q0') 
+    wfse.init.add('q0')
 
     # set the final state
     # wfse.final.add('q0')
@@ -380,10 +380,10 @@ def main():
 
 
     print("Please enter case number:\n1. Canonical\n2. Deletion\n3. Substitution")
-    task_case = raw_input()
+    task_case = 3
 
 
-    # phi_sdc = '[H^13 !O] ^ [0,15] & [H^2 A] ^ [0,8]' 
+    # phi_sdc = '[H^13 !O] ^ [0,15] & [H^2 A] ^ [0,8]'
 
     # case1_synthesis(phi_sdc, '../data/ts_synthesis.yaml')
 
@@ -412,11 +412,11 @@ def main():
 
     # phi_sdc = '[H^2 D] ^ [0,5]'
 
-    # phi_sdc = '[H^1 A] ^ [0,13]' 
+    # phi_sdc = '[H^1 A] ^ [0,13]'
 
 
-    
-    twtl_synthesis(phi_sdc, '../data/sdc_word_complex.yaml', wfse)
+
+    twtl_synthesis(phi_sdc, '../data/sdc_case_study.yaml', wfse)
 
 
 

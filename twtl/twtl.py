@@ -291,6 +291,7 @@ def translate(formula, kind='both', norm=False, optimize=True):
         result.append(dfa_inf)
 
     if norm: # compute TWTL bound
+        print("computing TWTL bound for formula: {}".format(formula))
         nodes = CommonTreeNodeStream(t)
         nodes.setTokenStream(tokens)
         boundEvaluator = bound(nodes)
@@ -320,7 +321,8 @@ if __name__ == '__main__':
 #                     kind=DFAType.Normal, norm=True)
 
     res = translate('[H^2 A]^[0, 4] | [H^2 B]^[2, 5]',
-                    kind=DFAType.Infinity, norm=True)
+                    kind=DFAType.Normal, norm=True)
 
-    print res
-    print res[1].g.nodes()
+    print (res)
+    print (res[1].g.nodes())
+

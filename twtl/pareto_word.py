@@ -6,23 +6,17 @@
 from __future__ import print_function
 from __future__ import division
 import networkx as nx
-from lomap import Fsa, Ts, Wfse, ts_times_wfse_times_fsa_pareto
+from lomap import Fsa, Ts, Wfse, ts_times_wfse_times_fsa
 from lomap.algorithms import product, dijkstra, modified_dijkstra, parametric_shortest_path
-import matplotlib.pyplot as plt
 import numpy as np
-import os
 import logging, sys
-import StringIO
 import networkx as nx
 import matplotlib.pyplot as plt
 import twtl
-from dfa import DFAType
 from synthesis import expand_duration_ts, compute_control_policy, ts_times_fsa, \
     verify
-from learning import learn_deadlines
+
 from lomap import Ts, Wfse, ts_times_wfse_times_fsa
-from platypus import NSGAII, DTLZ2
-from networkx.readwrite import json_graph
 import intervals as I
 
 split_list = []
@@ -203,7 +197,7 @@ def twtl_synthesis(formula, ts_file, wfse):
             old_dijkstra_length = []  # This list stores the Dijkstra path lengths for all final states
             Iu = I.closed(0,1)
             Iv = I.closed(0,1)
-        # 
+        #
             for each_state in product_model.final:
                 print("final_state",each_state)
                 # print("param:", parameter)
@@ -325,7 +319,7 @@ def twtl_synthesis(formula, ts_file, wfse):
     ax.grid(b=True)
 
 
-    
+
     fig2, ax2 = plt.subplots()
     ax2.plot(o1, o2, 'ro')
     ax2.set_xlabel('Task relaxation', fontsize=16)

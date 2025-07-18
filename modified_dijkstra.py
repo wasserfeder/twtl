@@ -313,7 +313,7 @@ def single_source_dijkstra(G, source, target=None, cutoff=None, weight='weight',
 
     else:
         get_weight = lambda u, v, data:  data.get(weight, 1)
-        # print("weights: ", get_weight)
+        print("weights: ", get_weight)
         # weight_value = get_weight
 
 
@@ -446,7 +446,7 @@ def _dijkstra(G, source, get_weight, pred=None, paths=None, cutoff=None,
                 if cost is None:
                     continue
                 vu_dist = dist[v] + parameter * get_weight(v, u, e)  + (1 - parameter) * 1
-                obj_one = dist[v] + get_weight(v, u, e) 
+                obj_one = dist[v] + get_weight(v, u, e)
                 # print("obj_one", obj_one)
                 obj_two = dist[v] + 1
                 # print("obj_two", obj_two)
@@ -487,7 +487,7 @@ def _dijkstra(G, source, get_weight, pred=None, paths=None, cutoff=None,
             print("<><><><><><<><><><><>")
             print("obj1:", obj1[target])
             # print("\n\n\n")
-            print("obj2:", obj2[target]) 
+            print("obj2:", obj2[target])
             print("<><><><><><><><><><><>")
 
 

@@ -45,7 +45,7 @@ def dijkstra2(G, source):
 	#Initially all distances are infinite and distance of source from itself is zero
 
 
-	for node in G.nodes(): 
+	for node in G.nodes():
 		d1 [node] = {}
 		d2 [node] = {}
 		p[node] = {}
@@ -57,8 +57,8 @@ def dijkstra2(G, source):
 			d1[node][Iu] = 0
 			d2[node][Iu] = 0
 		q.append([node,Iu])
-		
-	while len(q): 
+
+	while len(q):
 		loop_function(G,q,d1,d2,p)
 
 	remove_repeated_ints(d1)
@@ -120,7 +120,7 @@ def loop_function(G,q,d1,d2,p):
 	# iterate over successors of the current node u
 	neighbours = G.neighbors(u)
 
-	for v in neighbours: 
+	for v in neighbours:
 		for Iv in list(d1[v]):
 			assert Iv in d2[v]   # why?
 			if Iu & Iv :
@@ -168,9 +168,9 @@ def relax (G,u,Iu,v,Iv,d1,d2,p):
 		if Iv2.empty:
 			d1[v][Iv] = d1_temp
 			d2[v][Iv] = d2_temp
-			p[v][Iv] = u  
+			p[v][Iv] = u
 
-		else:                          ## double check this part 
+		else:                          ## double check this part
 			d1[v][Iv2] = d1[v][Iv]
 			d2[v][Iv2] = d2[v][Iv]
 			del d1[v][Iv]
@@ -198,8 +198,8 @@ def relax (G,u,Iu,v,Iv,d1,d2,p):
 				d1[v][Iv_new] = d1_temp
 				d2[v][Iv_new] = d2_temp
 				p[v][Iv_new] = u
-				
-				Iv_remaining = portion.closed(Iv.lower, split) 
+
+				Iv_remaining = portion.closed(Iv.lower, split)
 				d1[v][Iv_remaining] = d1[v][Iv]
 				d2[v][Iv_remaining] = d2[v][Iv]
 				del d1[v][Iv]
@@ -209,7 +209,7 @@ def relax (G,u,Iu,v,Iv,d1,d2,p):
 				d1[v][Iv_new] = d1_temp
 				d2[v][Iv_new] = d2_temp
 				p[v][Iv_new] = u
-				
+
 				Iv_remaining = portion.closed( split, Iv.upper)
 				d1[v][Iv_remaining] = d1[v][Iv]
 				d2[v][Iv_remaining] = d2[v][Iv]
@@ -223,7 +223,7 @@ def relax (G,u,Iu,v,Iv,d1,d2,p):
 				d2[v][Iv_new] = d2_temp
 				p[v][Iv_new] = u
 
-				Iv_remaining = portion.closed(Iv.lower, split) 
+				Iv_remaining = portion.closed(Iv.lower, split)
 				d1[v][Iv_remaining] = d1[v][Iv]
 				d2[v][Iv_remaining] = d2[v][Iv]
 				del d1[v][Iv]
@@ -233,7 +233,7 @@ def relax (G,u,Iu,v,Iv,d1,d2,p):
 				d1[v][Iv_new] = d1_temp
 				d2[v][Iv_new] = d2_temp
 				p[v][Iv_new] = u
-				
+
 				Iv_remaining = portion.closed( split, Iv.upper)
 				d1[v][Iv_remaining] = d1[v][Iv]
 				d2[v][Iv_remaining] = d2[v][Iv]
@@ -247,20 +247,20 @@ def relax (G,u,Iu,v,Iv,d1,d2,p):
 def find_split(d1_temp, d2_temp, d1_value, d2_value):
 
 	denominator = d1_value - d1_temp + d2_temp - d2_value
-	assert denominator != 0 
+	assert denominator != 0
 	split = (d2_temp-d2_value)/ denominator
 
 	return  split, denominator
 
 
-# if __name__== '__main__':
-#
-# 	G = nx.DiGraph()
-# 	G.add_nodes_from([1,2,3,4,5])
-# 	G.add_edges_from([(1,2,{'weight1':10, 'weight2': 1}), (1,3,{'weight1':2, 'weight2': 2}), (1,4,{'weight1':1, 'weight2': 10}),
-# 		(2,5,{'weight1':10, 'weight2': 1}), (3,5,{'weight1':2, 'weight2': 2}),(4,5,{'weight1':1, 'weight2': 10})])
-#
-# 	source = 1
-# 	d1, d2 = dijkstra2(G, source)
-# 	print(d1)
-# 	print(d2)
+if __name__== '__main__':
+
+	G = nx.DiGraph()
+	G.add_nodes_from([1,2,3,4,5])
+	G.add_edges_from([(1,2,{'weight1':10, 'weight2': 1}), (1,3,{'weight1':2, 'weight2': 2}), (1,4,{'weight1':1, 'weight2': 10}),
+		(2,5,{'weight1':10, 'weight2': 1}), (3,5,{'weight1':2, 'weight2': 2}),(4,5,{'weight1':1, 'weight2': 10})])
+
+	source = 1
+	d1, d2 = dijkstra2(G, source)
+	print(d1)
+	print(d2)

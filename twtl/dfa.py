@@ -143,12 +143,12 @@ class DFATreeNode(object):
         while stack:
             tree = stack.pop()
             if expand:
-                logging.debug('state: %s \n init: %s\n final: %s',
-                              Op.str(tree.operation),
-                              list(*it.chain([mapping[u] for u in tree.init])),
-                              list(*it.chain([mapping[u] for u in tree.final])))
-                tree.init = set(*it.chain([mapping[u] for u in tree.init]))
-                tree.final = set(*it.chain([mapping[u] for u in tree.final]))
+                # logging.debug('state: %s \n init: %s\n final: %s',
+                #               Op.str(tree.operation),
+                #               list(*it.chain([mapping[u] for u in tree.init])),
+                #               list(*it.chain([mapping[u] for u in tree.final])))
+                tree.init = set(it.chain(*[mapping[u] for u in tree.init]))
+                tree.final = set(it.chain(*[mapping[u] for u in tree.final]))
                 if tree.operation == Op.union:
                     tree.choices = dict([(key, v)
                                             for k, v in tree.choices.iteritems()

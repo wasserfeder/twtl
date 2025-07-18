@@ -21,7 +21,7 @@ from synthesis import expand_duration_ts, compute_control_policy, ts_times_fsa,\
                       verify
 from learning import learn_deadlines
 from lomap import Ts, Wfse, ts_times_wfse_times_fsa
-from platypus import NSGAII, DTLZ2
+# from platypus import NSGAII, DTLZ2
 from networkx.readwrite import json_graph
 
 
@@ -66,7 +66,8 @@ def twtl_synthesis(formula, ts_file, wfse):
         init_states = list(product_model.init)
         # print("init_states:", init_states)
         final_states = list(product_model.final)
-
+        print("fsa edges:", dfa_0.g.edges(data=True))
+        print("product edges:", pa.g.edges(data=True))
         o1 = [] # List of task relaxation costs corresponding to different values of the parameter
         o2 = [] # List of deadline relaxation costs corresponding to different values of the parameter
         mul_obj_cost = [] # List of linear combinations of task and deadline relaxations (pareto costs)
@@ -422,13 +423,13 @@ def main():
     # print(wfse)
 
 
-    phi_sdc = '(H^15 !O) & [H^1 A] ^ [0,7]'
+    # phi_sdc = '(H^15 !O) & [H^1 A] ^ [0,7]'
     # phi_sdc = '([!O] ^ [0,15] & [A] ^ [0,10])'
     # phi_sdc =  '[A] ^ [0,15]'
 
     # phi_sdc = '([H^1 E]^ [0,5] & [H^1 C] ^[0,10])' # Path exists
 
-    # phi_sdc = '[H^2 D] ^ [0,5]'
+    phi_sdc = '[H^2 D ]^ [0,5] | [H^1 A]^[0,2]'
 
     # phi_sdc = '[H^1 A] ^ [0,13]' 
 
